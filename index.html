@@ -4,8 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Scanner Kehadiran - Festival Literasi Sulawesi Utara 2026</title>
+  <title>Scanner Festival Literasi Sulawesi Utara 2026</title>
 
+  <!-- QR SCANNER -->
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 
   <style>
@@ -15,153 +16,136 @@
 
     body {
       margin: 0;
-      padding: 20px;
-      font-family: Arial, sans-serif;
-      background: #f3f4f6;
-      color: #111827;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 620px;
-      margin: auto;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f4f6f8;
+      color: #222;
     }
 
     .header {
-      background: #111827;
+      background: #0b57d0;
       color: white;
-      padding: 20px;
-      border-radius: 15px;
+      padding: 18px 20px;
       text-align: center;
-      margin-bottom: 15px;
     }
 
     .header h1 {
-      margin: 0 0 8px;
-      font-size: 24px;
+      margin: 0;
+      font-size: 22px;
     }
 
     .header p {
-      margin: 0;
+      margin: 6px 0 0;
       font-size: 14px;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 20px auto;
+      padding: 0 15px 40px;
     }
 
     .card {
       background: white;
-      padding: 18px;
-      border-radius: 15px;
-      margin-bottom: 15px;
-      box-shadow: 0 3px 12px rgba(0,0,0,.08);
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 18px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
     }
 
     label {
       display: block;
       font-weight: bold;
-      margin-bottom: 8px;
+      margin-bottom: 7px;
     }
 
     select,
     button {
       width: 100%;
-      padding: 14px;
-      border-radius: 10px;
+      padding: 13px;
+      border-radius: 9px;
       font-size: 16px;
     }
 
     select {
-      border: 1px solid #d1d5db;
+      border: 1px solid #ccc;
       background: white;
-      margin-bottom: 12px;
+      margin-bottom: 15px;
     }
 
     button {
       border: none;
-      background: #2563eb;
+      background: #0b57d0;
       color: white;
       font-weight: bold;
       cursor: pointer;
     }
 
+    button:hover {
+      opacity: 0.9;
+    }
+
     button:disabled {
-      opacity: .55;
+      background: #999;
       cursor: not-allowed;
     }
 
-    .status {
-      text-align: center;
-      padding: 13px;
-      border-radius: 10px;
-      margin-bottom: 15px;
-      background: #e0e7ff;
-      color: #3730a3;
-      font-weight: bold;
+    .camera-card {
+      position: relative;
+      overflow: hidden;
     }
-
-    .status.success {
-      background: #dcfce7;
-      color: #166534;
-    }
-
-    .status.error {
-      background: #fee2e2;
-      color: #991b1b;
-    }
-
-    /*
-      AREA VIDEO KAMERA
-    */
 
     #cameraContainer {
       width: 100%;
-      background: #000;
-      border-radius: 15px;
+      min-height: 350px;
+      background: #111;
+      border-radius: 12px;
       overflow: hidden;
       position: relative;
-      min-height: 300px;
     }
 
     #reader {
       width: 100%;
-      min-height: 300px;
+      min-height: 350px;
+      background: #111;
+      position: relative;
+      overflow: hidden;
     }
-
-    /*
-      Biarkan video dari html5-qrcode
-      benar-benar terlihat.
-    */
 
     #reader video {
-      display: block !important;
       width: 100% !important;
       height: auto !important;
-      min-height: 300px !important;
+      min-height: 350px;
       object-fit: cover !important;
-      background: #000 !important;
+      display: block !important;
+      background: #111;
     }
 
-    /*
-      Jangan sembunyikan elemen video.
-    */
-
-    #reader__scan_region {
-      width: 100% !important;
-    }
-
-    /*
-      Dashboard bawaan disembunyikan.
-    */
-
-    #reader__dashboard {
+    #reader img {
       display: none !important;
     }
 
-    #reader__camera_selection {
-      display: none !important;
+    #placeholder {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      color: white;
+      background: #111;
+      z-index: 5;
+      text-align: center;
+      padding: 20px;
     }
 
-    /*
-      Overlay kotak scan kita sendiri.
-    */
+    #placeholder .camera-icon {
+      font-size: 55px;
+      margin-bottom: 15px;
+    }
+
+    #placeholder p {
+      margin: 5px 0;
+    }
 
     .scan-overlay {
       position: absolute;
@@ -174,1144 +158,1027 @@
     }
 
     .scan-box {
-      width: 65vw;
+      width: 65%;
       max-width: 300px;
-      height: 65vw;
-      max-height: 300px;
-      border: 3px solid #22c55e;
+      aspect-ratio: 1 / 1;
+      border: 4px solid #00ff66;
       border-radius: 15px;
       box-shadow:
-        0 0 0 9999px rgba(0,0,0,.18);
+        0 0 0 9999px rgba(0,0,0,0.35),
+        0 0 15px rgba(0,255,102,0.8);
     }
 
-    .camera-placeholder {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: white;
-      text-align: center;
-      z-index: 2;
-      background: #111827;
-      padding: 30px;
-    }
-
-    .camera-placeholder.hidden {
-      display: none;
-    }
-
-    .camera-placeholder div {
-      font-size: 16px;
-      line-height: 1.6;
-    }
-
-    .scan-info {
-      text-align: center;
+    .status {
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 9px;
+      background: #eef2f5;
       font-size: 14px;
-      color: #6b7280;
-      padding-top: 10px;
+      text-align: center;
+    }
+
+    .status.success {
+      background: #dff6e5;
+      color: #146c2e;
+    }
+
+    .status.error {
+      background: #ffe1e1;
+      color: #a30000;
+    }
+
+    .status.warning {
+      background: #fff3cd;
+      color: #856404;
     }
 
     .result {
       display: none;
     }
 
-    .result-row {
-      padding: 10px 0;
-      border-bottom: 1px solid #e5e7eb;
-    }
-
-    .result-row strong {
+    .result.show {
       display: block;
-      margin-bottom: 4px;
     }
 
-    .spacer {
-      height: 10px;
+    .participant-info {
+      background: #f7f9fb;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+    }
+
+    .participant-info div {
+      margin-bottom: 8px;
+    }
+
+    .participant-info div:last-child {
+      margin-bottom: 0;
+    }
+
+    .participant-info strong {
+      display: inline-block;
+      min-width: 125px;
+    }
+
+    .success-box {
+      background: #dff6e5;
+      color: #146c2e;
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+
+    .duplicate-box {
+      background: #fff3cd;
+      color: #856404;
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+
+    .id-peserta {
+      font-size: 22px;
+      font-weight: bold;
+      text-align: center;
+      margin: 15px 0;
+      color: #0b57d0;
+    }
+
+    .small {
+      font-size: 13px;
+      color: #666;
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 15px;
+    }
+
+    @media (max-width: 500px) {
+      .container {
+        margin-top: 10px;
+      }
+
+      .card {
+        padding: 15px;
+      }
+
+      #cameraContainer,
+      #reader {
+        min-height: 300px;
+      }
+
+      #reader video {
+        min-height: 300px;
+      }
+
+      .scan-box {
+        width: 70%;
+      }
     }
   </style>
 </head>
 
 <body>
 
-<div class="container">
-
   <div class="header">
-    <h1>📷 Scanner Kehadiran</h1>
-    <p>Festival Literasi Sulawesi Utara 2026</p>
+    <h1>Festival Literasi Sulawesi Utara 2026</h1>
+    <p>Scanner Kehadiran Peserta</p>
   </div>
 
+  <div class="container">
 
-  <div class="card">
+    <!-- PILIH HARI -->
+    <div class="card">
 
-    <label for="hari">
-      Hari Kehadiran
-    </label>
+      <label for="hari">
+        Pilih Hari Kehadiran
+      </label>
 
-    <select id="hari">
+      <select id="hari">
+        <option value="Hari 2">Hari 2</option>
+        <option value="Hari 3">Hari 3</option>
+      </select>
 
-      <option value="Hari 2">
-        Hari 2
-      </option>
+      <button id="btnKamera" onclick="aktifkanKamera()">
+        📷 AKTIFKAN KAMERA
+      </button>
 
-      <option value="Hari 3">
-        Hari 3
-      </option>
-
-    </select>
-
-
-    <button
-      id="btnKamera"
-      onclick="aktifkanKamera()">
-
-      📷 AKTIFKAN KAMERA
-
-    </button>
-
-  </div>
-
-
-  <div
-    id="status"
-    class="status">
-
-    Kamera belum diaktifkan.
-
-  </div>
-
-
-  <div class="card">
-
-    <div id="cameraContainer">
-
-      <div
-        id="reader">
-
+      <div id="status" class="status">
+        Kamera belum diaktifkan.
       </div>
 
+    </div>
 
-      <div
-        id="placeholder"
-        class="camera-placeholder">
 
-        <div>
-          📷<br>
-          Kamera belum diaktifkan.
+    <!-- CAMERA -->
+    <div class="card camera-card">
+
+      <div id="cameraContainer">
+
+        <div id="reader"></div>
+
+        <div id="placeholder">
+          <div class="camera-icon">📷</div>
+          <p><strong>Kamera belum aktif</strong></p>
+          <p>Tekan tombol "AKTIFKAN KAMERA"</p>
+        </div>
+
+        <div class="scan-overlay">
+          <div class="scan-box"></div>
         </div>
 
       </div>
 
-
-      <div class="scan-overlay">
-
-        <div class="scan-box"></div>
-
+      <div class="small">
+        Arahkan QR peserta ke dalam kotak hijau.
       </div>
 
     </div>
 
 
-    <div class="scan-info">
+    <!-- HASIL SCAN -->
+    <div id="resultCard" class="card result">
 
-      Arahkan QR peserta ke dalam kotak hijau.
+      <h3 style="margin-top:0;">
+        Data Peserta
+      </h3>
+
+      <div id="hasilScan"></div>
+
+      <button id="btnKonfirmasi" onclick="konfirmasiKehadiran()">
+        ✅ KONFIRMASI KEHADIRAN
+      </button>
+
+      <button
+        onclick="scanLagi()"
+        style="margin-top:10px;background:#555;">
+        🔄 SCAN LAGI
+      </button>
+
+    </div>
+
+
+    <!-- HASIL KEHADIRAN -->
+    <div id="successCard" class="card result">
+
+      <div id="hasilKehadiran"></div>
+
+      <button onclick="scanLagi()">
+        🔄 SCAN PESERTA BERIKUTNYA
+      </button>
 
     </div>
 
   </div>
-
-
-  <div
-    id="resultCard"
-    class="card result">
-
-    <h3>📋 Data Peserta</h3>
-
-
-    <div class="result-row">
-
-      <strong>ID Peserta</strong>
-
-      <span id="hasilId"></span>
-
-    </div>
-
-
-    <div class="result-row">
-
-      <strong>Nama</strong>
-
-      <span id="hasilNama"></span>
-
-    </div>
-
-
-    <div class="result-row">
-
-      <strong>Kabupaten/Kota</strong>
-
-      <span id="hasilKabupaten"></span>
-
-    </div>
-
-
-    <div class="result-row">
-
-      <strong>Instansi/Komunitas</strong>
-
-      <span id="hasilInstansi"></span>
-
-    </div>
-
-
-    <div class="spacer"></div>
-
-
-    <button
-      id="btnKonfirmasi"
-      onclick="konfirmasiKehadiran()">
-
-      ✅ KONFIRMASI KEHADIRAN
-
-    </button>
-
-
-    <div class="spacer"></div>
-
-
-    <button
-      onclick="scanBerikutnya()">
-
-      🔄 SCAN PESERTA BERIKUTNYA
-
-    </button>
-
-  </div>
-
-</div>
 
 
 <script>
 
-/* =====================================================
-   URL APPS SCRIPT
-===================================================== */
+  /* =====================================================
+     KONFIGURASI
+  ===================================================== */
 
-const API_URL =
-  'https://script.google.com/macros/s/AKfycbwCdkbSG5DlSZJmM5N8g7KYU4UHuqXXEpXiP70aSr-9XEX9riRQXBUNVyj2nYqQOSPz/exec';
+  const API_URL =
+    'https://script.google.com/macros/s/AKfycbwCdkbSG5DlSZJmM5N8g7KYU4UHuqXXEpXiP70aSr-9XEX9riRQXBUNVyj2nYqQOSPz/exec';
 
 
-/* =====================================================
-   VARIABEL
-===================================================== */
+  /* =====================================================
+     VARIABEL
+  ===================================================== */
 
-let scanner = null;
+  let scanner = null;
+  let kameraAktif = false;
+  let sedangMemproses = false;
+  let pesertaTerpilih = null;
 
-let kameraAktif = false;
 
-let sedangMemproses = false;
+  /* =====================================================
+     AKTIFKAN KAMERA
+  ===================================================== */
 
-let idPesertaSaatIni = '';
+  async function aktifkanKamera() {
 
-let timerAPI = null;
+    const btn = document.getElementById('btnKamera');
+    const status = document.getElementById('status');
+    const placeholder = document.getElementById('placeholder');
 
+    if (kameraAktif) {
 
-/* =====================================================
-   STATUS
-===================================================== */
+      status.className = 'status success';
+      status.textContent = '✅ Kamera sudah aktif. Arahkan QR ke kotak hijau.';
 
-function setStatus(teks, tipe = '') {
-
-  const el =
-    document.getElementById('status');
-
-  el.textContent = teks;
-
-  el.className = 'status';
-
-  if (tipe) {
-
-    el.classList.add(tipe);
-
-  }
-
-}
-
-
-/* =====================================================
-   AKTIFKAN KAMERA
-===================================================== */
-
-async function aktifkanKamera() {
-
-  const tombol =
-    document.getElementById('btnKamera');
-
-  const placeholder =
-    document.getElementById('placeholder');
-
-
-  if (kameraAktif) {
-
-    return;
-
-  }
-
-
-  tombol.disabled = true;
-
-  tombol.textContent =
-    '⏳ MEMBUKA KAMERA...';
-
-
-  setStatus(
-    '⏳ Meminta akses kamera...'
-  );
-
-
-  try {
-
-    /*
-      Bersihkan scanner lama
-      jika ada.
-    */
-
-    if (scanner) {
-
-      try {
-
-        await scanner.stop();
-
-      } catch (e) {}
-
-      try {
-
-        await scanner.clear();
-
-      } catch (e) {}
-
-      scanner = null;
-
-    }
-
-
-    /*
-      Buat scanner baru.
-    */
-
-    scanner =
-      new Html5Qrcode(
-        'reader'
-      );
-
-
-    /*
-      KONFIGURASI.
-
-      Tidak menggunakan aspectRatio.
-      Tidak menggunakan getCameras().
-    */
-
-    const config = {
-
-      fps: 10,
-
-      qrbox: function(
-        width,
-        height
-      ) {
-
-        const ukuran =
-          Math.floor(
-            Math.min(width, height) * 0.65
-          );
-
-        return {
-
-          width:
-            Math.min(300, ukuran),
-
-          height:
-            Math.min(300, ukuran)
-
-        };
-
-      },
-
-      disableFlip: false,
-
-      formatsToSupport: [
-        Html5QrcodeSupportedFormats.QR_CODE
-      ]
-
-    };
-
-
-    /*
-      LANGSUNG MINTA KAMERA BELAKANG.
-    */
-
-    await scanner.start(
-
-      {
-        facingMode: {
-          ideal: 'environment'
-        }
-      },
-
-      config,
-
-      function(
-        decodedText,
-        decodedResult
-      ) {
-
-        qrBerhasil(decodedText);
-
-      },
-
-      function(errorMessage) {
-
-        /*
-          Tidak perlu menampilkan error
-          ketika QR belum terbaca.
-        */
-
-      }
-
-    );
-
-
-    /*
-      Kalau sampai di sini,
-      START BENAR-BENAR BERHASIL.
-    */
-
-    kameraAktif = true;
-
-
-    /*
-      Hilangkan placeholder.
-    */
-
-    placeholder.classList.add(
-      'hidden'
-    );
-
-
-    tombol.textContent =
-      '✅ KAMERA AKTIF';
-
-    tombol.disabled = true;
-
-
-    setStatus(
-      '✅ Kamera aktif. Arahkan QR peserta ke dalam kotak hijau.',
-      'success'
-    );
-
-
-    /*
-      Pastikan video benar-benar terlihat.
-    */
-
-    setTimeout(
-      pastikanVideoTerlihat,
-      500
-    );
-
-
-  } catch (error) {
-
-    console.error(
-      'KAMERA ERROR:',
-      error
-    );
-
-
-    kameraAktif = false;
-
-
-    tombol.disabled = false;
-
-    tombol.textContent =
-      '📷 AKTIFKAN KAMERA';
-
-
-    setStatus(
-      '❌ Kamera gagal dibuka: ' +
-      (error.message || error),
-      'error'
-    );
-
-
-    /*
-      Jika gagal,
-      bersihkan scanner.
-    */
-
-    if (scanner) {
-
-      try {
-
-        await scanner.clear();
-
-      } catch (e) {}
-
-      scanner = null;
-
-    }
-
-  }
-
-}
-
-
-/* =====================================================
-   PASTIKAN VIDEO ADA
-===================================================== */
-
-function pastikanVideoTerlihat() {
-
-  const video =
-    document.querySelector(
-      '#reader video'
-    );
-
-
-  if (!video) {
-
-    console.error(
-      'VIDEO TIDAK DITEMUKAN'
-    );
-
-
-    setStatus(
-      '❌ Kamera berhasil diminta tetapi video tidak tampil. Silakan refresh halaman dan coba lagi.',
-      'error'
-    );
-
-
-    kameraAktif = false;
-
-
-    const tombol =
-      document.getElementById(
-        'btnKamera'
-      );
-
-    tombol.disabled = false;
-
-    tombol.textContent =
-      '📷 AKTIFKAN KAMERA';
-
-
-    return;
-
-  }
-
-
-  console.log(
-    'VIDEO KAMERA DITEMUKAN',
-    video
-  );
-
-
-  video.style.display =
-    'block';
-
-  video.style.width =
-    '100%';
-
-  video.style.height =
-    'auto';
-
-  video.style.objectFit =
-    'cover';
-
-
-  /*
-    Pastikan video tidak muted/paused.
-  */
-
-  video.setAttribute(
-    'playsinline',
-    'true'
-  );
-
-  video.muted = true;
-
-
-  if (video.paused) {
-
-    video.play().catch(
-      function(error) {
-
-        console.log(
-          'Video play:',
-          error
-        );
-
-      }
-    );
-
-  }
-
-}
-
-
-/* =====================================================
-   QR BERHASIL
-===================================================== */
-
-function qrBerhasil(
-  teksQR
-) {
-
-  if (sedangMemproses) {
-
-    return;
-
-  }
-
-
-  sedangMemproses = true;
-
-
-  const id =
-    ambilIdPeserta(teksQR);
-
-
-  if (!id) {
-
-    sedangMemproses = false;
-
-    setStatus(
-      '❌ QR tidak berisi ID peserta yang valid.',
-      'error'
-    );
-
-    return;
-
-  }
-
-
-  idPesertaSaatIni = id;
-
-
-  setStatus(
-    '🔎 QR terbaca. Memeriksa peserta...'
-  );
-
-
-  document.getElementById(
-    'resultCard'
-  ).style.display = 'block';
-
-
-  document.getElementById(
-    'hasilId'
-  ).textContent = id;
-
-
-  document.getElementById(
-    'hasilNama'
-  ).textContent =
-    'Memuat...';
-
-
-  document.getElementById(
-    'hasilKabupaten'
-  ).textContent =
-    'Memuat...';
-
-
-  document.getElementById(
-    'hasilInstansi'
-  ).textContent =
-    'Memuat...';
-
-
-  panggilAPI(
-
-    'lookup',
-
-    {
-      id: id
-    },
-
-    function(data) {
-
-      if (
-        !data ||
-        !data.success ||
-        !data.found
-      ) {
-
-        sedangMemproses = false;
-
-        idPesertaSaatIni = '';
-
-        setStatus(
-          '❌ Peserta tidak ditemukan.',
-          'error'
-        );
-
-        return;
-
-      }
-
-
-      document.getElementById(
-        'hasilId'
-      ).textContent =
-        data.id || id;
-
-
-      document.getElementById(
-        'hasilNama'
-      ).textContent =
-        data.nama || '-';
-
-
-      document.getElementById(
-        'hasilKabupaten'
-      ).textContent =
-        data.kabupaten || '-';
-
-
-      document.getElementById(
-        'hasilInstansi'
-      ).textContent =
-        data.instansi || '-';
-
-
-      setStatus(
-        '✅ QR TERBACA: ' +
-        (data.id || id),
-        'success'
-      );
-
-
-      document.getElementById(
-        'btnKonfirmasi'
-      ).disabled = false;
-
-    }
-
-  );
-
-}
-
-
-/* =====================================================
-   AMBIL ID PESERTA
-===================================================== */
-
-function ambilIdPeserta(
-  teks
-) {
-
-  if (!teks) {
-
-    return '';
-
-  }
-
-
-  teks =
-    String(teks).trim();
-
-
-  /*
-    QR langsung:
-    FLS-20260925-1234
-  */
-
-  if (
-    /^FLS-/i.test(teks)
-  ) {
-
-    return teks;
-
-  }
-
-
-  /*
-    QR berupa URL
-  */
-
-  try {
-
-    const url =
-      new URL(teks);
-
-    const id =
-      url.searchParams.get(
-        'id'
-      );
-
-
-    if (
-      id &&
-      /^FLS-/i.test(id)
-    ) {
-
-      return id;
-
-    }
-
-  } catch (e) {}
-
-
-  /*
-    Cari pola FLS
-  */
-
-  const cocok =
-    teks.match(
-      /FLS-\d{8}-\d+/i
-    );
-
-
-  if (cocok) {
-
-    return cocok[0];
-
-  }
-
-
-  return '';
-
-}
-
-
-/* =====================================================
-   KONFIRMASI KEHADIRAN
-===================================================== */
-
-function konfirmasiKehadiran() {
-
-  if (!idPesertaSaatIni) {
-
-    setStatus(
-      '❌ ID peserta belum tersedia.',
-      'error'
-    );
-
-    return;
-
-  }
-
-
-  const hari =
-    document.getElementById(
-      'hari'
-    ).value;
-
-
-  const tombol =
-    document.getElementById(
-      'btnKonfirmasi'
-    );
-
-
-  tombol.disabled = true;
-
-  tombol.textContent =
-    '⏳ MENYIMPAN...';
-
-
-  setStatus(
-    '⏳ Menyimpan kehadiran...'
-  );
-
-
-  panggilAPI(
-
-    'scan',
-
-    {
-      id:
-        idPesertaSaatIni,
-
-      hari:
-        hari
-
-    },
-
-    function(data) {
-
-      tombol.disabled = false;
-
-      tombol.textContent =
-        '✅ KONFIRMASI KEHADIRAN';
-
-
-      if (!data) {
-
-        setStatus(
-          '❌ Tidak ada respons dari server.',
-          'error'
-        );
-
-        return;
-
-      }
-
-
-      if (data.success) {
-
-        setStatus(
-          '✅ KEHADIRAN BERHASIL DICATAT - ' +
-          hari,
-          'success'
-        );
-
-        return;
-
-      }
-
-
-      if (
-        data.duplicate ||
-        data.already ||
-        (
-          data.message &&
-          data.message
-            .toLowerCase()
-            .includes('sudah')
-        )
-      ) {
-
-        setStatus(
-          '⚠️ Peserta sudah tercatat untuk ' +
-          hari + '.',
-          'error'
-        );
-
-        return;
-
-      }
-
-
-      setStatus(
-        '❌ ' +
-        (
-          data.message ||
-          'Gagal mencatat kehadiran.'
-        ),
-        'error'
-      );
-
-    }
-
-  );
-
-}
-
-
-/* =====================================================
-   SCAN BERIKUTNYA
-===================================================== */
-
-function scanBerikutnya() {
-
-  sedangMemproses = false;
-
-  idPesertaSaatIni = '';
-
-
-  document.getElementById(
-    'resultCard'
-  ).style.display = 'none';
-
-
-  document.getElementById(
-    'hasilId'
-  ).textContent = '';
-
-
-  document.getElementById(
-    'hasilNama'
-  ).textContent = '';
-
-
-  document.getElementById(
-    'hasilKabupaten'
-  ).textContent = '';
-
-
-  document.getElementById(
-    'hasilInstansi'
-  ).textContent = '';
-
-
-  document.getElementById(
-    'btnKonfirmasi'
-  ).disabled = false;
-
-
-  setStatus(
-    '📷 Siap scan peserta berikutnya.',
-    'success'
-  );
-
-}
-
-
-/* =====================================================
-   API JSONP
-===================================================== */
-
-function panggilAPI(
-  action,
-  params,
-  callback
-) {
-
-  const callbackName =
-    'callback_' +
-    Date.now() +
-    '_' +
-    Math.floor(
-      Math.random() * 100000
-    );
-
-
-  const script =
-    document.createElement(
-      'script'
-    );
-
-
-  const query =
-    new URLSearchParams();
-
-
-  query.set(
-    'action',
-    action
-  );
-
-
-  query.set(
-    'callback',
-    callbackName
-  );
-
-
-  Object.keys(
-    params || {}
-  ).forEach(
-    function(key) {
-
-      query.set(
-        key,
-        params[key]
-      );
-
-    }
-  );
-
-
-  const url =
-    API_URL +
-    '?' +
-    query.toString();
-
-
-  let selesai = false;
-
-
-  function bersihkan() {
-
-    if (selesai) {
       return;
     }
 
-    selesai = true;
+    btn.disabled = true;
+    btn.textContent = '⏳ MEMBUKA KAMERA...';
+
+    status.className = 'status warning';
+    status.textContent = '⏳ Sedang membuka kamera...';
+
+    try {
+
+      if (scanner) {
+
+        try {
+          await scanner.stop();
+        } catch (e) {}
+
+        try {
+          await scanner.clear();
+        } catch (e) {}
+
+        scanner = null;
+      }
 
 
-    delete window[
-      callbackName
-    ];
+      scanner = new Html5Qrcode('reader');
 
 
-    if (
-      script.parentNode
-    ) {
+      const config = {
 
-      script.parentNode
-        .removeChild(script);
+        fps: 10,
+
+        qrbox: function(width, height) {
+
+          const ukuran =
+            Math.floor(Math.min(width, height) * 0.65);
+
+          return {
+            width: Math.min(300, ukuran),
+            height: Math.min(300, ukuran)
+          };
+
+        },
+
+        disableFlip: false,
+
+        formatsToSupport: [
+          Html5QrcodeSupportedFormats.QR_CODE
+        ]
+
+      };
+
+
+      /* =================================================
+         PENTING:
+         facingMode menggunakan STRING
+         agar kompatibel dengan html5-qrcode
+      ================================================= */
+
+      await scanner.start(
+
+        'environment',
+
+        config,
+
+        function(decodedText, decodedResult) {
+
+          qrBerhasil(decodedText);
+
+        },
+
+        function(errorMessage) {
+
+          // Error scanning biasa diabaikan.
+          // Kamera tetap berjalan.
+
+        }
+
+      );
+
+
+      kameraAktif = true;
+
+      placeholder.classList.add('hidden');
+
+      btn.disabled = false;
+      btn.textContent = '📷 KAMERA AKTIF';
+
+      status.className = 'status success';
+      status.textContent =
+        '✅ Kamera aktif. Arahkan QR peserta ke kotak hijau.';
+
+
+      pastikanVideoTerlihat();
+
+
+    } catch (error) {
+
+      console.error(error);
+
+      kameraAktif = false;
+
+      btn.disabled = false;
+      btn.textContent = '📷 AKTIFKAN KAMERA';
+
+      status.className = 'status error';
+
+      status.textContent =
+        '❌ Kamera gagal dibuka: ' +
+        (error.message || error);
 
     }
 
   }
 
 
-  window[
-    callbackName
-  ] = function(data) {
+  /* =====================================================
+     PASTIKAN VIDEO TERLIHAT
+  ===================================================== */
 
-    bersihkan();
+  function pastikanVideoTerlihat() {
 
-    callback(data);
+    setTimeout(function() {
 
-  };
+      const video =
+        document.querySelector('#reader video');
 
+      if (video) {
 
-  script.onerror =
-    function() {
+        video.style.display = 'block';
+        video.style.width = '100%';
+        video.style.height = 'auto';
+        video.style.minHeight = '300px';
+        video.style.objectFit = 'cover';
 
-      bersihkan();
+        try {
+          video.play();
+        } catch (e) {}
 
+      }
 
-      sedangMemproses =
-        false;
+    }, 1000);
 
-
-      setStatus(
-        '❌ Gagal terhubung ke server Apps Script.',
-        'error'
-      );
-
-    };
-
-
-  document.body.appendChild(
-    script
-  );
+  }
 
 
-  timerAPI =
-    setTimeout(
-      function() {
+  /* =====================================================
+     QR BERHASIL TERBACA
+  ===================================================== */
 
-        if (selesai) {
+  function qrBerhasil(decodedText) {
+
+    if (sedangMemproses) {
+      return;
+    }
+
+    sedangMemproses = true;
+
+
+    let idPeserta =
+      String(decodedText || '').trim();
+
+
+    /*
+      QR seharusnya hanya berisi ID peserta,
+      contoh:
+      FLS-20260925-7169
+    */
+
+
+    if (!idPeserta) {
+
+      sedangMemproses = false;
+
+      return;
+
+    }
+
+
+    const status =
+      document.getElementById('status');
+
+    status.className = 'status warning';
+
+    status.textContent =
+      '⏳ QR terbaca: ' + idPeserta +
+      '. Mencari data peserta...';
+
+
+    cariPeserta(idPeserta);
+
+  }
+
+
+  /* =====================================================
+     CARI PESERTA KE APPS SCRIPT
+  ===================================================== */
+
+  function cariPeserta(idPeserta) {
+
+    const callbackName =
+      'lookupCallback_' +
+      Date.now() +
+      '_' +
+      Math.floor(Math.random() * 10000);
+
+
+    const script =
+      document.createElement('script');
+
+
+    window[callbackName] = function(data) {
+
+      try {
+
+        if (!data || !data.success) {
+
+          tampilkanError(
+            data && data.message
+              ? data.message
+              : 'Data peserta tidak ditemukan.'
+          );
+
           return;
         }
 
 
-        bersihkan();
+        if (!data.found) {
+
+          tampilkanError(
+            'ID peserta tidak ditemukan: ' +
+            idPeserta
+          );
+
+          return;
+        }
 
 
-        sedangMemproses =
-          false;
+        pesertaTerpilih = data;
 
 
-        setStatus(
-          '❌ Server terlalu lama merespons.',
-          'error'
-        );
+        tampilkanPeserta(data);
 
 
-      },
-      15000
-    );
+      } finally {
 
-}
+        delete window[callbackName];
+
+        if (script.parentNode) {
+          script.parentNode.removeChild(script);
+        }
+
+      }
+
+    };
+
+
+    script.onerror = function() {
+
+      tampilkanError(
+        'Tidak dapat terhubung ke server.'
+      );
+
+      delete window[callbackName];
+
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+
+    };
+
+
+    script.src =
+      API_URL +
+      '?action=lookup' +
+      '&id=' +
+      encodeURIComponent(idPeserta) +
+      '&callback=' +
+      encodeURIComponent(callbackName);
+
+
+    document.body.appendChild(script);
+
+  }
+
+
+  /* =====================================================
+     TAMPILKAN DATA PESERTA
+  ===================================================== */
+
+  function tampilkanPeserta(data) {
+
+    const resultCard =
+      document.getElementById('resultCard');
+
+    const hasil =
+      document.getElementById('hasilScan');
+
+    const status =
+      document.getElementById('status');
+
+
+    hasil.innerHTML =
+
+      '<div class="participant-info">' +
+
+      '<div>' +
+      '<strong>ID Peserta</strong>: ' +
+      escapeHtml(data.idPeserta || '') +
+      '</div>' +
+
+      '<div>' +
+      '<strong>Nama</strong>: ' +
+      escapeHtml(data.nama || '') +
+      '</div>' +
+
+      '<div>' +
+      '<strong>Kabupaten/Kota</strong>: ' +
+      escapeHtml(data.kabupaten || '') +
+      '</div>' +
+
+      '<div>' +
+      '<strong>Instansi</strong>: ' +
+      escapeHtml(data.instansi || '') +
+      '</div>' +
+
+      '<div>' +
+      '<strong>Jenis Peserta</strong>: ' +
+      escapeHtml(data.jenisPeserta || '') +
+      '</div>' +
+
+      '</div>';
+
+
+    resultCard.classList.add('show');
+
+
+    status.className = 'status success';
+
+    status.textContent =
+      '✅ QR TERBACA: ' +
+      (data.idPeserta || '');
+
+
+    sedangMemproses = false;
+
+  }
+
+
+  /* =====================================================
+     KONFIRMASI KEHADIRAN
+  ===================================================== */
+
+  function konfirmasiKehadiran() {
+
+    if (!pesertaTerpilih) {
+
+      tampilkanError(
+        'Data peserta belum tersedia.'
+      );
+
+      return;
+
+    }
+
+
+    const hari =
+      document.getElementById('hari').value;
+
+
+    const btn =
+      document.getElementById('btnKonfirmasi');
+
+
+    btn.disabled = true;
+    btn.textContent =
+      '⏳ MENYIMPAN KEHADIRAN...';
+
+
+    const status =
+      document.getElementById('status');
+
+
+    status.className = 'status warning';
+
+    status.textContent =
+      '⏳ Menyimpan kehadiran...';
+
+
+    const callbackName =
+      'scanCallback_' +
+      Date.now() +
+      '_' +
+      Math.floor(Math.random() * 10000);
+
+
+    const script =
+      document.createElement('script');
+
+
+    window[callbackName] = function(data) {
+
+      try {
+
+        if (!data) {
+
+          tampilkanError(
+            'Respons server kosong.'
+          );
+
+          return;
+        }
+
+
+        if (data.success) {
+
+          tampilkanBerhasil(data);
+
+        } else {
+
+          /*
+            Jika peserta sudah hadir,
+            tampilkan sebagai duplikat.
+          */
+
+          if (
+            data.duplicate ||
+            data.status === 'SUDAH HADIR'
+          ) {
+
+            tampilkanDuplikat(data);
+
+          } else {
+
+            tampilkanError(
+              data.message ||
+              'Kehadiran gagal disimpan.'
+            );
+
+          }
+
+        }
+
+      } finally {
+
+        delete window[callbackName];
+
+        if (script.parentNode) {
+          script.parentNode.removeChild(script);
+        }
+
+        btn.disabled = false;
+
+        btn.textContent =
+          '✅ KONFIRMASI KEHADIRAN';
+
+      }
+
+    };
+
+
+    script.onerror = function() {
+
+      tampilkanError(
+        'Tidak dapat menghubungi server.'
+      );
+
+      delete window[callbackName];
+
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+
+      btn.disabled = false;
+
+      btn.textContent =
+        '✅ KONFIRMASI KEHADIRAN';
+
+    };
+
+
+    script.src =
+      API_URL +
+      '?action=scan' +
+      '&id=' +
+      encodeURIComponent(
+        pesertaTerpilih.idPeserta
+      ) +
+      '&hari=' +
+      encodeURIComponent(hari) +
+      '&callback=' +
+      encodeURIComponent(callbackName);
+
+
+    document.body.appendChild(script);
+
+  }
+
+
+  /* =====================================================
+     BERHASIL
+  ===================================================== */
+
+  function tampilkanBerhasil(data) {
+
+    document
+      .getElementById('resultCard')
+      .classList.remove('show');
+
+
+    const successCard =
+      document.getElementById('successCard');
+
+
+    const hasil =
+      document.getElementById('hasilKehadiran');
+
+
+    hasil.innerHTML =
+
+      '<div class="success-box">' +
+
+      '✅ KEHADIRAN BERHASIL DICATAT' +
+
+      '</div>' +
+
+      '<div class="participant-info">' +
+
+      '<div>' +
+      '<strong>Nama</strong>: ' +
+      escapeHtml(
+        pesertaTerpilih.nama || ''
+      ) +
+      '</div>' +
+
+      '<div>' +
+      '<strong>ID Peserta</strong>: ' +
+      escapeHtml(
+        pesertaTerpilih.idPeserta || ''
+      ) +
+      '</div>' +
+
+      '<div>' +
+      '<strong>Hari</strong>: ' +
+      escapeHtml(
+        document.getElementById('hari').value
+      ) +
+      '</div>' +
+
+      '</div>';
+
+
+    successCard.classList.add('show');
+
+
+    const status =
+      document.getElementById('status');
+
+
+    status.className =
+      'status success';
+
+
+    status.textContent =
+      '✅ Kehadiran berhasil dicatat.';
+
+
+    pesertaTerpilih = null;
+
+  }
+
+
+  /* =====================================================
+     DUPLIKAT
+  ===================================================== */
+
+  function tampilkanDuplikat(data) {
+
+    document
+      .getElementById('resultCard')
+      .classList.remove('show');
+
+
+    const successCard =
+      document.getElementById('successCard');
+
+
+    const hasil =
+      document.getElementById('hasilKehadiran');
+
+
+    hasil.innerHTML =
+
+      '<div class="duplicate-box">' +
+
+      '⚠️ PESERTA SUDAH HADIR PADA HARI INI' +
+
+      '</div>' +
+
+      '<div class="participant-info">' +
+
+      '<div>' +
+      '<strong>Nama</strong>: ' +
+      escapeHtml(
+        pesertaTerpilih.nama || ''
+      ) +
+      '</div>' +
+
+      '<div>' +
+      '<strong>ID Peserta</strong>: ' +
+      escapeHtml(
+        pesertaTerpilih.idPeserta || ''
+      ) +
+      '</div>' +
+
+      '<div>' +
+      '<strong>Hari</strong>: ' +
+      escapeHtml(
+        document.getElementById('hari').value
+      ) +
+      '</div>' +
+
+      '</div>';
+
+
+    successCard.classList.add('show');
+
+
+    const status =
+      document.getElementById('status');
+
+
+    status.className =
+      'status warning';
+
+
+    status.textContent =
+      '⚠️ Peserta sudah tercatat hadir hari ini.';
+
+
+    pesertaTerpilih = null;
+
+  }
+
+
+  /* =====================================================
+     ERROR
+  ===================================================== */
+
+  function tampilkanError(message) {
+
+    document
+      .getElementById('resultCard')
+      .classList.remove('show');
+
+
+    document
+      .getElementById('successCard')
+      .classList.remove('show');
+
+
+    const status =
+      document.getElementById('status');
+
+
+    status.className =
+      'status error';
+
+
+    status.textContent =
+      '❌ ' + message;
+
+
+    sedangMemproses = false;
+
+  }
+
+
+  /* =====================================================
+     SCAN LAGI
+  ===================================================== */
+
+  function scanLagi() {
+
+    pesertaTerpilih = null;
+
+    sedangMemproses = false;
+
+
+    document
+      .getElementById('resultCard')
+      .classList.remove('show');
+
+
+    document
+      .getElementById('successCard')
+      .classList.remove('show');
+
+
+    const status =
+      document.getElementById('status');
+
+
+    if (kameraAktif) {
+
+      status.className =
+        'status success';
+
+      status.textContent =
+        '✅ Kamera aktif. Arahkan QR berikutnya.';
+
+    } else {
+
+      status.className =
+        'status';
+
+      status.textContent =
+        'Kamera belum diaktifkan.';
+
+    }
+
+  }
+
+
+  /* =====================================================
+     ESCAPE HTML
+  ===================================================== */
+
+  function escapeHtml(value) {
+
+    return String(value || '')
+
+      .replace(/&/g, '&amp;')
+
+      .replace(/</g, '&lt;')
+
+      .replace(/>/g, '&gt;')
+
+      .replace(/"/g, '&quot;')
+
+      .replace(/'/g, '&#039;');
+
+  }
+
+
+  /* =====================================================
+     SAAT HALAMAN DIBUKA
+  ===================================================== */
+
+  window.addEventListener('load', function() {
+
+    const status =
+      document.getElementById('status');
+
+    status.className =
+      'status';
+
+    status.textContent =
+      'Kamera belum diaktifkan. Tekan tombol untuk memulai.';
+
+  });
 
 </script>
 
