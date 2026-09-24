@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+  <title>Scanner Kehadiran - Festival Literasi Sulawesi Utara</title>
+
+  <script src="https://unpkg.com/html5-qrcode"
+          type="text/javascript"></script>
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      color: #222;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 600px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    .header,
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    }
+
+    .header {
+      text-align: center;
+    }
+
+    .header h1 {
+      margin: 0 0 8px;
+      font-size: 22px;
+    }
+
+    .header p {
+      margin: 0;
+      color: #666;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    select {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 16px;
+      background: white;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .start {
+      background: #222;
+      color: white;
+    }
+
+    .stop {
+      background: #ddd;
+      color: #222;
+    }
+
+    #reader {
+      width: 100%;
+      margin-top: 15px;
+    }
+
+    .status {
+      display: none;
+      padding: 15px;
+      margin-top: 15px;
+      border-radius: 10px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .success {
+      display: block;
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+
+    .warning {
+      display: block;
+      background: #fff8e1;
+      color: #f57f17;
+    }
+
+    .error {
+      display: block;
+      background: #ffebee;
+      color: #c62828;
+    }
+
+    .participant {
+      display: none;
+      text-align: center;
+      margin-top: 15px;
+      padding: 15px;
+      border-radius: 10px;
+      background: #f7f7f7;
+    }
+
+    .nama {
+      font-size: 21px;
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+
+    .id {
+      font-size: 14px;
+      color: #666;
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="header">
+
+    <h1>Scanner Kehadiran</h1>
+
+    <p>
+      Festival Literasi Sulawesi Utara
+    </p>
+
+  </div>
+
+
+  <div class="card">
+
+    <label for="hari">
+      Pilih Hari Kehadiran
+    </label>
+
+    <select id="hari">
+
+      <option value="Hari 1">
+        Hari 1
+      </option>
+
+      <option value="Hari 2">
+        Hari 2
+      </option>
+
+      <option value="Hari 3">
+        Hari 3
+      </option>
+
+    </select>
+
+
+    <button
+      class="start"
+      onclick="mulaiScanner()">
+
+      MULAI SCANNER
+
+    </button>
+
+
+    <button
+      class="stop"
+      onclick="hentikanScanner()">
+
+      HENTIKAN SCANNER
+
+    </button>
+
+
+    <div id="reader"></div>
+
+
+    <div
+      id="status"
+      class="status">
+    </div>
+
+
+    <div
+      id="participant"
+      class="participant">
+
+      <div
+        id="namaPeserta"
+        class="nama">
+      </div>
+
+      <div
+        id="idPeserta"
+        class="id">
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+let scanner = null;
+
+let scannerAktif = false;
+
+let sedangMemproses = false;
+
+
+/* =========================
+   STATUS
+========================= */
+
+function tampilkanStatus(pesan, jenis) {
+
+  const status =
+    document.getElementById("status");
+
+  status.innerText = pesan;
+
+  status.className =
+    "status " + jenis;
+
+}
+
+
+/* =========================
+   MULAI SCANNER
+========================= */
+
+function mulaiScanner() {
+
+  if (scannerAktif) {
+
+    tampilkanStatus(
+      "Scanner sudah aktif.",
+      "warning"
+    );
+
+    return;
+  }
+
+
+  sedangMemproses = false;
+
+
+  tampilkanStatus(
+    "Meminta akses kamera...",
+    "warning"
+  );
+
+
+  if (
+    typeof Html5Qrcode === "undefined"
+  ) {
+
+    tampilkanStatus(
+      "Library scanner belum dimuat. Periksa koneksi internet.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  scanner =
+    new Html5Qrcode("reader");
+
+
+  scanner.start(
+
+    {
+      facingMode: "environment"
+    },
+
+    {
+      fps: 10,
+
+      qrbox: {
+        width: 250,
+        height: 250
+      }
+
+    },
+
+    function(qrText) {
+
+      if (sedangMemproses) {
+        return;
+      }
+
+      sedangMemproses = true;
+
+      prosesQR(qrText);
+
+    },
+
+    function(errorMessage) {
+
+      // Abaikan pesan ketika QR belum ditemukan.
+
+    }
+
+  )
+
+  .then(function() {
+
+    scannerAktif = true;
+
+    tampilkanStatus(
+      "✓ Kamera aktif. Arahkan kamera ke QR Code peserta.",
+      "success"
+    );
+
+  })
+
+  .catch(function(error) {
+
+    scannerAktif = false;
+
+    console.log(error);
+
+    tampilkanStatus(
+      "Kamera tidak dapat digunakan. Pastikan izin kamera diberikan.",
+      "error"
+    );
+
+  });
+
+}
+
+
+/* =========================
+   HENTIKAN SCANNER
+========================= */
+
+function hentikanScanner() {
+
+  if (
+    !scanner ||
+    !scannerAktif
+  ) {
+
+    return;
+  }
+
+
+  scanner.stop()
+
+    .then(function() {
+
+      scannerAktif = false;
+
+      tampilkanStatus(
+        "Scanner dihentikan.",
+        "warning"
+      );
+
+    })
+
+    .catch(function(error) {
+
+      console.log(error);
+
+    });
+
+}
+
+
+/* =========================
+   PROSES QR
+========================= */
+
+function prosesQR(qrText) {
+
+  const hari =
+    document.getElementById("hari").value;
+
+  const idPeserta =
+    String(qrText).trim();
+
+
+  if (!idPeserta) {
+
+    tampilkanStatus(
+      "QR Code tidak berisi ID Peserta.",
+      "error"
+    );
+
+    sedangMemproses = false;
+
+    return;
+  }
+
+
+  tampilkanStatus(
+    "Memeriksa data peserta...",
+    "warning"
+  );
+
+
+  /*
+    NANTI BAGIAN INI AKAN
+    DIHUBUNGKAN KE APPS SCRIPT.
+  */
+
+
+  setTimeout(function() {
+
+    tampilkanStatus(
+      "QR terbaca: " + idPeserta,
+      "success"
+    );
+
+    sedangMemproses = false;
+
+  }, 500);
+
+}
+
+</script>
+
+</body>
+</html>
