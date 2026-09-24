@@ -3,148 +3,164 @@
 
 <head>
 
-  <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1.0">
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+>
 
-  <title>Scanner Kehadiran - Festival Literasi Sulawesi Utara</title>
+<title>
+Scanner Kehadiran - Festival Literasi Sulawesi Utara
+</title>
 
-  <script src="https://unpkg.com/html5-qrcode"
-          type="text/javascript"></script>
+<script
+  src="https://unpkg.com/html5-qrcode"
+  type="text/javascript">
+</script>
 
-  <style>
+<style>
 
-    * {
-      box-sizing: border-box;
-    }
+* {
+  box-sizing: border-box;
+}
 
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f4f6f8;
-      color: #222;
-    }
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f6f8;
+  color: #222;
+}
 
-    .container {
-      width: 100%;
-      max-width: 600px;
-      margin: auto;
-      padding: 20px;
-    }
+.container {
+  width: 100%;
+  max-width: 600px;
+  margin: auto;
+  padding: 20px;
+}
 
-    .header,
-    .card {
-      background: white;
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 16px;
-      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
-    }
+.header,
+.card {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+}
 
-    .header {
-      text-align: center;
-    }
+.header {
+  text-align: center;
+}
 
-    .header h1 {
-      margin: 0 0 8px;
-      font-size: 22px;
-    }
+.header h1 {
+  margin: 0 0 8px;
+  font-size: 22px;
+}
 
-    .header p {
-      margin: 0;
-      color: #666;
-    }
+.header p {
+  margin: 0;
+  color: #666;
+}
 
-    label {
-      display: block;
-      font-weight: bold;
-      margin-bottom: 8px;
-    }
+label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
 
-    select {
-      width: 100%;
-      padding: 13px;
-      border: 1px solid #ccc;
-      border-radius: 10px;
-      font-size: 16px;
-      background: white;
-    }
+select {
+  width: 100%;
+  padding: 13px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 16px;
+  background: white;
+}
 
-    button {
-      width: 100%;
-      padding: 14px;
-      margin-top: 10px;
-      border: none;
-      border-radius: 10px;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-    }
+button {
+  width: 100%;
+  padding: 14px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
 
-    .start {
-      background: #222;
-      color: white;
-    }
+.start {
+  background: #222;
+  color: white;
+}
 
-    .stop {
-      background: #ddd;
-      color: #222;
-    }
+.stop {
+  background: #ddd;
+  color: #222;
+}
 
-    #reader {
-      width: 100%;
-      margin-top: 15px;
-    }
+#reader {
+  width: 100%;
+  margin-top: 15px;
+}
 
-    .status {
-      display: none;
-      padding: 15px;
-      margin-top: 15px;
-      border-radius: 10px;
-      text-align: center;
-      font-weight: bold;
-    }
+.status {
+  display: none;
+  padding: 15px;
+  margin-top: 15px;
+  border-radius: 10px;
+  text-align: center;
+  font-weight: bold;
+}
 
-    .success {
-      display: block;
-      background: #e8f5e9;
-      color: #2e7d32;
-    }
+.success {
+  display: block;
+  background: #e8f5e9;
+  color: #2e7d32;
+}
 
-    .warning {
-      display: block;
-      background: #fff8e1;
-      color: #f57f17;
-    }
+.warning {
+  display: block;
+  background: #fff8e1;
+  color: #f57f17;
+}
 
-    .error {
-      display: block;
-      background: #ffebee;
-      color: #c62828;
-    }
+.error {
+  display: block;
+  background: #ffebee;
+  color: #c62828;
+}
 
-    .participant {
-      display: none;
-      text-align: center;
-      margin-top: 15px;
-      padding: 15px;
-      border-radius: 10px;
-      background: #f7f7f7;
-    }
+.participant {
+  display: none;
+  text-align: center;
+  margin-top: 15px;
+  padding: 15px;
+  border-radius: 10px;
+  background: #f7f7f7;
+}
 
-    .nama {
-      font-size: 21px;
-      font-weight: bold;
-      margin-bottom: 6px;
-    }
+.nama {
+  font-size: 21px;
+  font-weight: bold;
+  margin-bottom: 6px;
+}
 
-    .id {
-      font-size: 14px;
-      color: #666;
-    }
+.id {
+  font-size: 14px;
+  color: #666;
+}
 
-  </style>
+.info {
+  margin-top: 15px;
+  padding: 12px;
+  background: #f1f3f4;
+  border-radius: 10px;
+  font-size: 13px;
+  color: #555;
+  text-align: center;
+}
+
+</style>
 
 </head>
 
@@ -154,14 +170,15 @@
 
   <div class="header">
 
-    <h1>Scanner Kehadiran</h1>
+    <h1>
+      Scanner Kehadiran
+    </h1>
 
     <p>
       Festival Literasi Sulawesi Utara
     </p>
 
   </div>
-
 
   <div class="card">
 
@@ -185,7 +202,6 @@
 
     </select>
 
-
     <button
       class="start"
       onclick="mulaiScanner()">
@@ -193,7 +209,6 @@
       MULAI SCANNER
 
     </button>
-
 
     <button
       class="stop"
@@ -203,15 +218,12 @@
 
     </button>
 
-
     <div id="reader"></div>
-
 
     <div
       id="status"
       class="status">
     </div>
-
 
     <div
       id="participant"
@@ -229,12 +241,32 @@
 
     </div>
 
+    <div class="info">
+
+      QR Code peserta berisi ID Peserta.
+      <br>
+      Sistem akan otomatis memeriksa
+      kehadiran pada hari yang dipilih.
+
+    </div>
+
   </div>
 
 </div>
 
-
 <script>
+
+/* ============================================
+   URL APPS SCRIPT
+============================================ */
+
+const API_URL =
+  "https://script.google.com/macros/s/AKfycbwO5fS0KqIH8hUvwWjZ1ImgEYsaIeb_fYLkWSbO5q6bD8MuGVlMuAw7kzPMjQH-gNlg/exec";
+
+
+/* ============================================
+   VARIABEL SCANNER
+============================================ */
 
 let scanner = null;
 
@@ -243,17 +275,9 @@ let scannerAktif = false;
 let sedangMemproses = false;
 
 
-/* =========================
-   URL GOOGLE APPS SCRIPT
-========================= */
-
-const API_URL =
-  "URL_DEPLOYMENT_BARU_KAMU";
-
-
-/* =========================
-   STATUS
-========================= */
+/* ============================================
+   TAMPILKAN STATUS
+============================================ */
 
 function tampilkanStatus(pesan, jenis) {
 
@@ -264,13 +288,12 @@ function tampilkanStatus(pesan, jenis) {
 
   status.className =
     "status " + jenis;
-
 }
 
 
-/* =========================
+/* ============================================
    MULAI SCANNER
-========================= */
+============================================ */
 
 function mulaiScanner() {
 
@@ -284,15 +307,12 @@ function mulaiScanner() {
     return;
   }
 
-
   sedangMemproses = false;
-
 
   tampilkanStatus(
     "Meminta akses kamera...",
     "warning"
   );
-
 
   if (
     typeof Html5Qrcode === "undefined"
@@ -306,10 +326,8 @@ function mulaiScanner() {
     return;
   }
 
-
   scanner =
     new Html5Qrcode("reader");
-
 
   scanner.start(
 
@@ -319,12 +337,10 @@ function mulaiScanner() {
 
     {
       fps: 10,
-
       qrbox: {
         width: 250,
         height: 250
       }
-
     },
 
     function(qrText) {
@@ -340,9 +356,7 @@ function mulaiScanner() {
     },
 
     function(errorMessage) {
-
-      // Abaikan pesan ketika QR belum ditemukan.
-
+      // Error pembacaan kecil diabaikan
     }
 
   )
@@ -362,7 +376,10 @@ function mulaiScanner() {
 
     scannerAktif = false;
 
-    console.log(error);
+    console.log(
+      "Error kamera:",
+      error
+    );
 
     tampilkanStatus(
       "Kamera tidak dapat digunakan. Pastikan izin kamera diberikan.",
@@ -374,9 +391,9 @@ function mulaiScanner() {
 }
 
 
-/* =========================
+/* ============================================
    HENTIKAN SCANNER
-========================= */
+============================================ */
 
 function hentikanScanner() {
 
@@ -384,36 +401,37 @@ function hentikanScanner() {
     !scanner ||
     !scannerAktif
   ) {
-
     return;
   }
 
-
   scanner.stop()
 
-    .then(function() {
+  .then(function() {
 
-      scannerAktif = false;
+    scannerAktif = false;
 
-      tampilkanStatus(
-        "Scanner dihentikan.",
-        "warning"
-      );
+    tampilkanStatus(
+      "Scanner dihentikan.",
+      "warning"
+    );
 
-    })
+  })
 
-    .catch(function(error) {
+  .catch(function(error) {
 
-      console.log(error);
+    console.log(
+      "Error menghentikan scanner:",
+      error
+    );
 
-    });
+  });
 
 }
 
 
-/* =========================
-   PROSES QR
-========================= */
+/* ============================================
+   PROSES QR CODE
+============================================ */
 
 function prosesQR(qrText) {
 
@@ -443,10 +461,9 @@ function prosesQR(qrText) {
   );
 
 
-  /*
-    Callback menerima hasil
-    dari Google Apps Script
-  */
+  /* ==========================================
+     CALLBACK DARI APPS SCRIPT
+  ========================================== */
 
   window.scanCallback =
     function(response) {
@@ -457,9 +474,9 @@ function prosesQR(qrText) {
       );
 
 
-      /* =========================
+      /* ========================================
          BERHASIL
-      ========================= */
+      ======================================== */
 
       if (response.success) {
 
@@ -468,12 +485,10 @@ function prosesQR(qrText) {
           "success"
         );
 
-
         document.getElementById(
           "namaPeserta"
         ).innerText =
           response.nama;
-
 
         document.getElementById(
           "idPeserta"
@@ -483,32 +498,29 @@ function prosesQR(qrText) {
           " | " +
           response.hari;
 
-
         document.getElementById(
           "participant"
         ).style.display =
           "block";
-
       }
 
 
-      /* =========================
+      /* ========================================
          DUPLIKAT
-      ========================= */
+      ======================================== */
 
       else if (response.duplicate) {
 
         tampilkanStatus(
-          "⚠ " + response.message,
+          "⚠ " +
+          response.message,
           "warning"
         );
-
 
         document.getElementById(
           "namaPeserta"
         ).innerText =
           response.nama;
-
 
         document.getElementById(
           "idPeserta"
@@ -518,53 +530,51 @@ function prosesQR(qrText) {
           " | " +
           response.hari;
 
-
         document.getElementById(
           "participant"
         ).style.display =
           "block";
-
       }
 
 
-      /* =========================
-         GAGAL
-      ========================= */
+      /* ========================================
+         ERROR
+      ======================================== */
 
       else {
 
         tampilkanStatus(
-          "✕ " + response.message,
+          "✕ " +
+          response.message,
           "error"
         );
-
 
         document.getElementById(
           "participant"
         ).style.display =
           "none";
-
       }
 
 
-      /*
-        Setelah selesai,
-        scanner boleh membaca QR berikutnya
-      */
+      /* ========================================
+         SCANNER BISA MEMPROSES QR BERIKUTNYA
+      ======================================== */
 
-      setTimeout(function() {
+      setTimeout(
+        function() {
 
-        sedangMemproses = false;
+          sedangMemproses = false;
 
-      }, 1500);
+        },
+        1500
+      );
 
     };
 
 
-  /*
-    Membuat request ke
-    Google Apps Script
-  */
+  /* ==========================================
+     KIRIM REQUEST KE APPS SCRIPT
+  ========================================== */
 
   const script =
     document.createElement("script");
@@ -582,9 +592,9 @@ function prosesQR(qrText) {
     Date.now();
 
 
-  /*
-    Jika koneksi gagal
-  */
+  /* ==========================================
+     JIKA GAGAL TERHUBUNG
+  ========================================== */
 
   script.onerror =
     function() {
@@ -593,7 +603,6 @@ function prosesQR(qrText) {
         "✕ Gagal terhubung ke sistem kehadiran.",
         "error"
       );
-
 
       sedangMemproses = false;
 
