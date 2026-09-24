@@ -1,79 +1,46 @@
-```html
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
-
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0">
+  <title>Scanner Kehadiran - Festival Literasi Sulawesi Utara 2026</title>
 
-  <title>
-    Scanner Kehadiran Festival Literasi Sulawesi Utara
-  </title>
-
-  <script
-    src="https://unpkg.com/html5-qrcode"
-    type="text/javascript">
-  </script>
-
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 
   <style>
-
     * {
       box-sizing: border-box;
     }
 
-
     body {
       margin: 0;
+      padding: 20px;
       font-family: Arial, sans-serif;
-      background: #f4f7fb;
-      color: #1f2937;
+      background: #f4f6f8;
+      color: #222;
     }
-
 
     .container {
-      width: 100%;
-      max-width: 520px;
-      margin: 0 auto;
-      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,.08);
     }
 
-
-    .header {
-      background: #ffffff;
-      border-radius: 16px;
-      padding: 22px;
+    h1 {
       text-align: center;
-      margin-bottom: 18px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      font-size: 24px;
+      margin-bottom: 8px;
     }
 
-
-    .header h1 {
-      margin: 0 0 8px;
-      font-size: 22px;
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 20px;
     }
-
-
-    .header p {
-      margin: 0;
-      font-size: 14px;
-      color: #6b7280;
-    }
-
-
-    .card {
-      background: #ffffff;
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 18px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-    }
-
 
     label {
       display: block;
@@ -81,1156 +48,465 @@
       margin-bottom: 8px;
     }
 
-
     select {
       width: 100%;
-      padding: 13px;
-      border: 1px solid #d1d5db;
-      border-radius: 10px;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
       font-size: 16px;
-      background: #ffffff;
-      margin-bottom: 18px;
+      margin-bottom: 20px;
     }
-
 
     #reader {
       width: 100%;
+      min-height: 300px;
+      border: 2px solid #ddd;
+      border-radius: 12px;
       overflow: hidden;
-      border-radius: 12px;
+      background: #fafafa;
     }
 
-
-    .status {
-      display: none;
-      padding: 15px;
-      border-radius: 10px;
-      margin-top: 15px;
-      text-align: center;
-      font-weight: bold;
-      line-height: 1.5;
-    }
-
-
-    .success {
-      display: block;
-      background: #dcfce7;
-      color: #166534;
-    }
-
-
-    .error {
-      display: block;
-      background: #fee2e2;
-      color: #991b1b;
-    }
-
-
-    .warning {
-      display: block;
-      background: #fef3c7;
-      color: #92400e;
-    }
-
-
-    .participant {
-      display: none;
-      margin-top: 18px;
-      padding: 18px;
-      background: #f8fafc;
-      border-radius: 12px;
-      border: 1px solid #e5e7eb;
-    }
-
-
-    .participant h2 {
-      margin-top: 0;
-      margin-bottom: 15px;
-      font-size: 19px;
-      text-align: center;
-    }
-
-
-    .data-row {
-      margin-bottom: 12px;
-    }
-
-
-    .data-label {
-      font-size: 12px;
-      color: #6b7280;
-      margin-bottom: 3px;
-    }
-
-
-    .data-value {
-      font-size: 16px;
-      font-weight: bold;
-      word-break: break-word;
-    }
-
-
-    .btn {
-      width: 100%;
-      border: none;
-      border-radius: 10px;
+    #status {
+      margin-top: 16px;
       padding: 14px;
+      border-radius: 8px;
+      background: #f0f0f0;
+      text-align: center;
+    }
+
+    #hasil {
+      display: none;
+      margin-top: 20px;
+      padding: 18px;
+      border-radius: 12px;
+      background: #f8f9fa;
+      border: 1px solid #ddd;
+    }
+
+    #hasil h2 {
+      margin-top: 0;
+    }
+
+    .data {
+      margin: 8px 0;
+    }
+
+    .data strong {
+      display: inline-block;
+      width: 150px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 16px;
+      border: none;
+      border-radius: 8px;
+      background: #198754;
+      color: white;
       font-size: 16px;
       font-weight: bold;
       cursor: pointer;
-      margin-top: 10px;
     }
 
-
-    .btn-confirm {
-      background: #166534;
-      color: white;
-    }
-
-
-    .btn-confirm:disabled {
-      opacity: 0.6;
+    button:disabled {
+      background: #aaa;
       cursor: not-allowed;
     }
 
-
-    .btn-cancel {
-      background: #e5e7eb;
-      color: #374151;
+    .success {
+      background: #d1e7dd !important;
+      color: #0f5132;
     }
 
-
-    .footer {
-      text-align: center;
-      font-size: 12px;
-      color: #9ca3af;
-      padding: 10px;
+    .error {
+      background: #f8d7da !important;
+      color: #842029;
     }
 
+    .warning {
+      background: #fff3cd !important;
+      color: #664d03;
+    }
   </style>
-
 </head>
-
 
 <body>
 
-
 <div class="container">
 
+  <h1>Scanner Kehadiran</h1>
 
-  <div class="header">
-
-    <h1>
-      SCANNER KEHADIRAN
-    </h1>
-
-    <p>
-      Festival Literasi Sulawesi Utara
-    </p>
-
+  <div class="subtitle">
+    Festival Literasi Sulawesi Utara 2026
   </div>
 
+  <label for="hari">Pilih Hari Kehadiran</label>
 
-  <div class="card">
+  <select id="hari">
+    <option value="Hari 2">Hari 2</option>
+    <option value="Hari 3">Hari 3</option>
+  </select>
 
+  <div id="reader"></div>
 
-    <label for="hari">
-      Pilih Hari Kehadiran
-    </label>
+  <div id="status">
+    Memulai kamera...
+  </div>
 
+  <div id="hasil">
 
-    <select id="hari">
+    <h2>Data Peserta</h2>
 
-      <option value="Hari 2">
-        Hari 2
-      </option>
-
-      <option value="Hari 3">
-        Hari 3
-      </option>
-
-    </select>
-
-
-    <div id="reader"></div>
-
-
-    <div
-      id="status"
-      class="status">
+    <div class="data">
+      <strong>ID Peserta:</strong>
+      <span id="idPeserta"></span>
     </div>
 
-
-    <div
-      id="participantBox"
-      class="participant">
-
-
-      <h2>
-        DATA PESERTA
-      </h2>
-
-
-      <div class="data-row">
-
-        <div class="data-label">
-          Nama Peserta
-        </div>
-
-        <div
-          class="data-value"
-          id="namaPeserta">
-          -
-        </div>
-
-      </div>
-
-
-      <div class="data-row">
-
-        <div class="data-label">
-          Kabupaten/Kota
-        </div>
-
-        <div
-          class="data-value"
-          id="kabupaten">
-          -
-        </div>
-
-      </div>
-
-
-      <div class="data-row">
-
-        <div class="data-label">
-          ID Peserta
-        </div>
-
-        <div
-          class="data-value"
-          id="idPeserta">
-          -
-        </div>
-
-      </div>
-
-
-      <div class="data-row">
-
-        <div class="data-label">
-          Kehadiran
-        </div>
-
-        <div
-          class="data-value"
-          id="hariPeserta">
-          -
-        </div>
-
-      </div>
-
-
-      <button
-        id="btnConfirm"
-        class="btn btn-confirm"
-        onclick="konfirmasiKehadiran()">
-
-        ✓ KONFIRMASI KEHADIRAN
-
-      </button>
-
-
-      <button
-        id="btnCancel"
-        class="btn btn-cancel"
-        onclick="batalScan()">
-
-        BATAL / SCAN ULANG
-
-      </button>
-
-
+    <div class="data">
+      <strong>Nama:</strong>
+      <span id="nama"></span>
     </div>
 
+    <div class="data">
+      <strong>WhatsApp:</strong>
+      <span id="whatsapp"></span>
+    </div>
+
+    <div class="data">
+      <strong>Kabupaten/Kota:</strong>
+      <span id="kabupaten"></span>
+    </div>
+
+    <div class="data">
+      <strong>Instansi:</strong>
+      <span id="instansi"></span>
+    </div>
+
+    <button id="btnKonfirmasi" onclick="konfirmasiKehadiran()">
+      ✓ KONFIRMASI KEHADIRAN
+    </button>
 
   </div>
-
-
-  <div class="footer">
-
-    Sistem Kehadiran Festival Literasi Sulawesi Utara
-
-  </div>
-
 
 </div>
 
-
 <script>
 
+const API_URL =
+  "https://script.google.com/macros/s/AKfycbwCdkbSG5DlSZJmM5N8g7KYU4UHuqXXEpXiP70aSr-9XEX9riRQXBUNVyj2nYqQOSPz/exec";
 
-/* =====================================================
-   KONFIGURASI API
-===================================================== */
-
-const API_URL = "https://script.google.com/macros/s/AKfycbwCdkbSG5DlSZJmM5N8g7KYU4UHuqXXEpXiP70aSr-9XEX9riRQXBUNVyj2nYqQOSPz/exec";
-
-/* =====================================================
-   VARIABEL
-===================================================== */
-
+let scanner = null;
 let idPesertaAktif = "";
-
 let sedangMemproses = false;
 
-let requestAktif = null;
 
+/* ================================
+   CEK LIBRARY
+================================ */
 
-/* =====================================================
-   STATUS
-===================================================== */
+window.addEventListener("load", function() {
 
-function tampilkanStatus(pesan, tipe) {
+  if (typeof Html5Qrcode === "undefined") {
 
-  const status =
-    document.getElementById("status");
+    document.getElementById("status").className = "error";
 
-  status.className =
-    "status " + tipe;
+    document.getElementById("status").innerHTML =
+      "❌ Library scanner tidak berhasil dimuat.<br><br>" +
+      "Periksa koneksi internet kemudian refresh halaman.";
 
-  status.innerHTML =
-    pesan;
-
-}
-
-
-function sembunyikanStatus() {
-
-  const status =
-    document.getElementById("status");
-
-  status.className =
-    "status";
-
-  status.innerHTML =
-    "";
-
-}
-
-
-/* =====================================================
-   TAMPILKAN PESERTA
-===================================================== */
-
-function tampilkanPeserta(data) {
-
-  document.getElementById(
-    "namaPeserta"
-  ).textContent =
-    data.nama || "-";
-
-
-  document.getElementById(
-    "kabupaten"
-  ).textContent =
-    data.kabupaten || "-";
-
-
-  document.getElementById(
-    "idPeserta"
-  ).textContent =
-    data.idPeserta || "-";
-
-
-  document.getElementById(
-    "hariPeserta"
-  ).textContent =
-    data.hari || "-";
-
-
-  document.getElementById(
-    "participantBox"
-  ).style.display =
-    "block";
-
-
-  document.getElementById(
-    "btnConfirm"
-  ).style.display =
-    "block";
-
-
-  document.getElementById(
-    "btnCancel"
-  ).style.display =
-    "block";
-
-}
-
-
-/* =====================================================
-   SEMBUNYIKAN PESERTA
-===================================================== */
-
-function sembunyikanPeserta() {
-
-  document.getElementById(
-    "participantBox"
-  ).style.display =
-    "none";
-
-
-  document.getElementById(
-    "namaPeserta"
-  ).textContent =
-    "-";
-
-
-  document.getElementById(
-    "kabupaten"
-  ).textContent =
-    "-";
-
-
-  document.getElementById(
-    "idPeserta"
-  ).textContent =
-    "-";
-
-
-  document.getElementById(
-    "hariPeserta"
-  ).textContent =
-    "-";
-
-}
-
-
-/* =====================================================
-   REQUEST JSONP
-===================================================== */
-
-function panggilAPI(parameter, callback) {
-
-  const namaCallback =
-    "apiCallback_" +
-    Date.now() +
-    "_" +
-    Math.floor(
-      Math.random() * 100000
-    );
-
-
-  let selesai =
-    false;
-
-
-  window[namaCallback] =
-    function(data) {
-
-      if (selesai) {
-        return;
-      }
-
-
-      selesai = true;
-
-
-      clearTimeout(
-        timeout
-      );
-
-
-      cleanup();
-
-
-      callback(
-        null,
-        data
-      );
-
-    };
-
-
-  const script =
-    document.createElement("script");
-
-
-  const query =
-    Object.keys(parameter)
-      .map(function(k) {
-
-        return (
-          encodeURIComponent(k) +
-          "=" +
-          encodeURIComponent(
-            parameter[k]
-          )
-        );
-
-      })
-      .join("&");
-
-
-  script.src =
-    API_URL +
-    "?" +
-    query +
-    "&callback=" +
-    encodeURIComponent(
-      namaCallback
-    ) +
-    "&_=" +
-    Date.now();
-
-
-  script.async =
-    true;
-
-
-  script.onerror =
-    function() {
-
-      if (selesai) {
-        return;
-      }
-
-
-      selesai = true;
-
-
-      clearTimeout(
-        timeout
-      );
-
-
-      cleanup();
-
-
-      callback(
-        new Error(
-          "Koneksi ke server gagal."
-        ),
-        null
-      );
-
-    };
-
-
-  document.body.appendChild(
-    script
-  );
-
-
-  const timeout =
-    setTimeout(
-      function() {
-
-        if (selesai) {
-          return;
-        }
-
-
-        selesai = true;
-
-
-        cleanup();
-
-
-        callback(
-
-          new Error(
-            "Server tidak memberikan respons."
-          ),
-
-          null
-
-        );
-
-      },
-      15000
-    );
-
-
-  function cleanup() {
-
-    if (
-      script &&
-      script.parentNode
-    ) {
-
-      script.parentNode.removeChild(
-        script
-      );
-
-    }
-
-
-    try {
-
-      delete window[namaCallback];
-
-    } catch (e) {
-
-      window[namaCallback] =
-        undefined;
-
-    }
-
+    return;
   }
 
+  mulaiScanner();
+
+});
+
+
+/* ================================
+   MULAI SCANNER
+================================ */
+
+function mulaiScanner() {
+
+  scanner = new Html5Qrcode("reader");
+
+  const config = {
+    fps: 10,
+    qrbox: {
+      width: 250,
+      height: 250
+    }
+  };
+
+  scanner.start(
+    {
+      facingMode: "environment"
+    },
+    config,
+    qrBerhasil,
+    qrGagal
+  )
+  .then(function() {
+
+    document.getElementById("status").className = "";
+
+    document.getElementById("status").innerHTML =
+      "📷 Kamera aktif. Arahkan kamera ke QR peserta.";
+
+  })
+  .catch(function(error) {
+
+    document.getElementById("status").className = "error";
+
+    document.getElementById("status").innerHTML =
+      "❌ Kamera tidak dapat digunakan.<br><br>" +
+      error;
+
+  });
+
 }
 
 
-/* =====================================================
-   PROSES QR
-===================================================== */
+/* ================================
+   QR BERHASIL TERBACA
+================================ */
 
-function prosesQR(decodedText) {
-
+function qrBerhasil(decodedText) {
 
   if (sedangMemproses) {
     return;
   }
 
+  sedangMemproses = true;
 
-  const idPeserta =
-    String(
-      decodedText || ""
-    ).trim();
+  const id = decodedText.trim();
 
+  document.getElementById("status").className = "";
 
-  if (!idPeserta) {
+  document.getElementById("status").innerHTML =
+    "⏳ Memeriksa data peserta...";
 
-    tampilkanStatus(
-      "✕ QR tidak berisi ID peserta.",
-      "error"
-    );
+  cariPeserta(id);
 
-
-    return;
-
-  }
+}
 
 
-  sedangMemproses =
-    true;
+/* ================================
+   QR GAGAL TERBACA
+================================ */
+
+function qrGagal(errorMessage) {
+
+  // Tidak perlu menampilkan error
+  // karena scanner akan terus mencari QR.
+}
 
 
-  idPesertaAktif =
-    idPeserta;
+/* ================================
+   CARI PESERTA
+================================ */
 
-
-  const hari =
-    document.getElementById(
-      "hari"
-    ).value;
-
-
-  tampilkanStatus(
-
-    "⏳ Memeriksa data peserta...",
-
-    "warning"
-
-  );
-
+function cariPeserta(id) {
 
   panggilAPI(
-
     {
-
       action: "lookup",
-
-      id: idPeserta
-
+      id: id
     },
+    function(response) {
 
-    function(error, data) {
+      if (!response.success) {
 
+        document.getElementById("status").className = "error";
 
-      sedangMemproses =
-        false;
+        document.getElementById("status").innerHTML =
+          "❌ Terjadi kesalahan saat menghubungi server.";
 
-
-      if (error) {
-
-        console.error(
-          error
-        );
-
-
-        tampilkanStatus(
-
-          "✕ Gagal terhubung ke sistem.<br>" +
-          "<small>" +
-          error.message +
-          "</small>",
-
-          "error"
-
-        );
-
+        sedangMemproses = false;
 
         return;
-
       }
 
+      if (!response.found) {
 
-      if (
-        !data
-      ) {
+        document.getElementById("status").className = "error";
 
-        tampilkanStatus(
+        document.getElementById("status").innerHTML =
+          "❌ Peserta tidak ditemukan.<br>ID: " + id;
 
-          "✕ Sistem tidak memberikan respons.",
-
-          "error"
-
-        );
-
+        sedangMemproses = false;
 
         return;
-
       }
 
+      idPesertaAktif = response.participant.idPeserta;
 
-      if (
-        !data.success
-      ) {
+      document.getElementById("idPeserta").textContent =
+        response.participant.idPeserta;
 
-        tampilkanStatus(
+      document.getElementById("nama").textContent =
+        response.participant.nama;
 
-          "✕ " +
-          (
-            data.message ||
-            "Peserta tidak ditemukan."
-          ),
+      document.getElementById("whatsapp").textContent =
+        response.participant.whatsapp;
 
-          "error"
+      document.getElementById("kabupaten").textContent =
+        response.participant.kabupaten;
 
-        );
+      document.getElementById("instansi").textContent =
+        response.participant.instansi || "-";
 
+      document.getElementById("hasil").style.display = "block";
 
-        return;
+      document.getElementById("status").className = "success";
 
-      }
+      document.getElementById("status").innerHTML =
+        "✓ Peserta ditemukan. Silakan konfirmasi kehadiran.";
 
-
-      if (
-        !data.found
-      ) {
-
-        tampilkanStatus(
-
-          "✕ Peserta dengan ID " +
-          idPeserta +
-          " tidak ditemukan.",
-
-          "error"
-
-        );
-
-
-        return;
-
-      }
-
-
-      data.hari =
-        hari;
-
-
-      tampilkanPeserta(
-        data
-      );
-
-
-      sembunyikanStatus();
+      sedangMemproses = false;
 
     }
-
   );
 
 }
 
 
-/* =====================================================
+/* ================================
    KONFIRMASI KEHADIRAN
-===================================================== */
+================================ */
 
 function konfirmasiKehadiran() {
 
+  if (!idPesertaAktif) {
 
-  if (
-    !idPesertaAktif
-  ) {
-
-    tampilkanStatus(
-
-      "✕ ID peserta tidak ditemukan.",
-
-      "error"
-
-    );
-
+    alert("ID peserta belum tersedia.");
 
     return;
-
   }
 
+  const hari = document.getElementById("hari").value;
 
-  if (
-    requestAktif
-  ) {
+  const tombol = document.getElementById("btnKonfirmasi");
 
-    return;
+  tombol.disabled = true;
 
-  }
+  tombol.textContent = "⏳ Menyimpan...";
 
+  document.getElementById("status").className = "";
 
-  const hari =
-    document.getElementById(
-      "hari"
-    ).value;
-
-
-  const tombol =
-    document.getElementById(
-      "btnConfirm"
-    );
-
-
-  tombol.disabled =
-    true;
-
-
-  tombol.textContent =
-    "⏳ MENYIMPAN KEHADIRAN...";
-
-
-  tampilkanStatus(
-
-    "⏳ Menyimpan kehadiran...",
-
-    "warning"
-
-  );
-
-
-  requestAktif =
-    true;
-
+  document.getElementById("status").innerHTML =
+    "⏳ Mencatat kehadiran...";
 
   panggilAPI(
-
     {
-
       action: "scan",
-
       id: idPesertaAktif,
-
       hari: hari
-
     },
+    function(response) {
 
-    function(error, data) {
-
-
-      requestAktif =
-        false;
-
-
-      if (error) {
-
-        tombol.disabled =
-          false;
-
-
-        tombol.textContent =
-          "✓ KONFIRMASI KEHADIRAN";
-
-
-        tampilkanStatus(
-
-          "✕ Gagal terhubung ke sistem kehadiran.<br>" +
-          "<small>" +
-          error.message +
-          "</small>",
-
-          "error"
-
-        );
-
-
-        return;
-
-      }
-
-
-      if (
-        !data
-      ) {
-
-        tombol.disabled =
-          false;
-
-
-        tombol.textContent =
-          "✓ KONFIRMASI KEHADIRAN";
-
-
-        tampilkanStatus(
-
-          "✕ Sistem tidak memberikan respons.",
-
-          "error"
-
-        );
-
-
-        return;
-
-      }
-
-
-      if (
-        data.duplicate
-      ) {
-
-        tombol.disabled =
-          true;
-
-
-        tombol.textContent =
-          "SUDAH HADIR";
-
-
-        tampilkanStatus(
-
-          "⚠️ PESERTA SUDAH HADIR<br><br>" +
-
-          (
-            data.nama ||
-            "Peserta"
-          ) +
-
-          " sudah tercatat hadir pada " +
-
-          (
-            data.hari ||
-            hari
-          ) +
-
-          ".",
-
-          "warning"
-
-        );
-
-
-        return;
-
-      }
-
-
-      if (
-        !data.success
-      ) {
-
-        tombol.disabled =
-          false;
-
-
-        tombol.textContent =
-          "✓ KONFIRMASI KEHADIRAN";
-
-
-        tampilkanStatus(
-
-          "✕ " +
-          (
-            data.message ||
-            "Kehadiran gagal dicatat."
-          ),
-
-          "error"
-
-        );
-
-
-        return;
-
-      }
-
-
-      tombol.disabled =
-        true;
-
+      tombol.disabled = false;
 
       tombol.textContent =
-        "✓ KEHADIRAN TERCATAT";
+        "✓ KONFIRMASI KEHADIRAN";
+
+      if (!response.success) {
+
+        document.getElementById("status").className = "error";
+
+        document.getElementById("status").innerHTML =
+          "❌ " + (response.message || "Gagal mencatat kehadiran.");
+
+        return;
+      }
+
+      if (response.duplicate) {
+
+        document.getElementById("status").className = "warning";
+
+        document.getElementById("status").innerHTML =
+          "⚠️ Peserta sudah tercatat hadir pada " + hari + ".";
+
+        return;
+      }
+
+      document.getElementById("status").className = "success";
+
+      document.getElementById("status").innerHTML =
+        "✓ KEHADIRAN BERHASIL DICATAT<br>" +
+        idPesertaAktif + " — " + hari;
+
+    }
+  );
+
+}
 
 
-      tampilkanStatus(
+/* ================================
+   JSONP API
+================================ */
 
-        "✓ KEHADIRAN BERHASIL DICATAT<br><br>" +
+function panggilAPI(params, callback) {
 
-        "<strong>" +
-        (
-          data.nama ||
-          "Peserta"
-        ) +
-        "</strong><br>" +
+  const callbackName =
+    "callback_" + Date.now() + "_" +
+    Math.floor(Math.random() * 100000);
 
-        (
-          data.hari ||
-          hari
-        ),
+  params.callback = callbackName;
 
-        "success"
+  const query = Object.keys(params)
+    .map(function(key) {
 
-      );
+      return encodeURIComponent(key) +
+        "=" +
+        encodeURIComponent(params[key]);
 
+    })
+    .join("&");
 
-      setTimeout(
-        function() {
+  const script = document.createElement("script");
 
-          resetScanner();
+  window[callbackName] = function(data) {
 
-        },
-        2500
-      );
+    try {
+      callback(data);
+    } finally {
+
+      delete window[callbackName];
+
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
 
     }
 
-  );
+  };
+
+  script.onerror = function() {
+
+    document.getElementById("status").className = "error";
+
+    document.getElementById("status").innerHTML =
+      "❌ Tidak dapat terhubung ke server Apps Script.";
+
+    delete window[callbackName];
+
+    if (script.parentNode) {
+      script.parentNode.removeChild(script);
+    }
+
+    sedangMemproses = false;
+
+  };
+
+  script.src = API_URL + "?" + query;
+
+  document.body.appendChild(script);
 
 }
-
-
-/* =====================================================
-   BATAL / SCAN ULANG
-===================================================== */
-
-function batalScan() {
-
-  resetScanner();
-
-}
-
-
-/* =====================================================
-   RESET
-===================================================== */
-
-function resetScanner() {
-
-
-  idPesertaAktif =
-    "";
-
-
-  sedangMemproses =
-    false;
-
-
-  requestAktif =
-    null;
-
-
-  sembunyikanPeserta();
-
-
-  sembunyikanStatus();
-
-
-  const tombol =
-    document.getElementById(
-      "btnConfirm"
-    );
-
-
-  tombol.disabled =
-    false;
-
-
-  tombol.textContent =
-    "✓ KONFIRMASI KEHADIRAN";
-
-
-  tombol.style.display =
-    "block";
-
-}
-
-
-/* =====================================================
-   QR SCANNER
-===================================================== */
-
-function onScanSuccess(
-  decodedText,
-  decodedResult
-) {
-
-  prosesQR(
-    decodedText
-  );
-
-}
-
-
-function onScanFailure(
-  error
-) {
-
-  // Abaikan.
-  // Scanner terus mencari QR.
-
-}
-
-
-/* =====================================================
-   JALANKAN SCANNER
-===================================================== */
-
-const scanner =
-  new Html5QrcodeScanner(
-
-    "reader",
-
-    {
-
-      fps: 10,
-
-      qrbox: {
-
-        width: 250,
-
-        height: 250
-
-      },
-
-      rememberLastUsedCamera:
-        true
-
-    },
-
-    false
-
-  );
-
-
-scanner.render(
-  onScanSuccess,
-  onScanFailure
-);
 
 </script>
 
-
 </body>
-
 </html>
-```
