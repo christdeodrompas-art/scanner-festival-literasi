@@ -436,6 +436,182 @@ function prosesQR(qrText) {
 
 
   /*
+    URL Web App Google Apps Script
+  */
+
+  const API_URL =
+    "https://script.google.com/macros/s/AKfycby1heSaujCRLMxDY63rkjpQYmo_EAkTU35na09QKiV7xkg-XllsAMCiuixPL400ymwQ/exec";
+
+
+  /*
+    Callback yang akan menerima
+    jawaban dari Google Apps Script
+  */
+
+  window.scanCallback = function(response) {
+
+    console.log("Respons Apps Script:", response);
+
+
+    if (response.success) {
+
+      tampilkanStatus(
+        "✓ KEHADIRAN BERHASIL DICATAT",
+        "success"
+      );
+
+
+      const participant =
+        document.getElementById("participant");
+
+      const namaPeserta =
+        document.getElementById("namaPeserta");
+
+      const idPesertaElement =
+        document.getElementById("idPeserta");
+
+
+      namaPeserta.innerText =
+        response.nama;
+
+
+      idPesertaElement.innerText =
+        "ID Peserta: " +
+        response.idPeserta +
+        " | " +
+        response.hari;
+
+
+      participant.style.display =
+        "block";
+
+
+    } else if (response.duplicate) {
+
+      tampilkanStatus(
+        "⚠ " + response.message,
+        "warning"
+      );
+
+
+      const participant =
+        document.getElementById("participant");
+
+      const namaPeserta =
+        document.getElementById("namaPeserta");
+
+      const idPesertaElement =
+        document.getElementById("idPeserta");
+
+
+      namaPeserta.innerText =
+        response.nama;
+
+
+      idPesertaElement.innerText =
+        "ID Peserta: " +
+        response.idPeserta +
+        " | " +
+        response.hari;
+
+
+      participant.style.display =
+        "block";
+
+
+    } else {
+
+      tampilkanStatus(
+        "✕ " + response.message,
+        "error"
+      );
+
+
+      document.getElementById(
+        "participant"
+      ).style.display = "none";
+
+    }
+
+
+    /*
+      Izinkan scanner membaca QR berikutnya
+    */
+
+    setTimeout(function() {
+
+      sedangMemproses = false;
+
+    }, 1500);
+
+  };
+
+
+  /*
+    Buat request ke Google Apps Script
+    menggunakan JSONP
+  */
+
+  const script =
+    document.createElement("script");
+
+
+  script.src =
+    API_URL +
+    "?action=scan" +
+    "&id=" +
+    encodeURIComponent(idPeserta) +
+    "&hari=" +
+    encodeURIComponent(hari) +
+    "&callback=scanCallback" +
+    "&t=" +
+    Date.now();
+
+
+  script.onerror = function() {
+
+    tampilkanStatus(
+      "✕ Gagal terhubung ke sistem kehadiran.",
+      "error"
+    );
+
+
+    sedangMemproses = false;
+
+  };
+
+
+  document.body.appendChild(script);
+
+}
+
+  const hari =
+    document.getElementById("hari").value;
+
+  const idPeserta =
+    String(qrText).trim();
+
+
+  if (!idPeserta) {
+
+    tampilkanStatus(
+      "QR Code tidak berisi ID Peserta.",
+      "error"
+    );
+
+    sedangMemproses = false;
+
+    return;
+  }
+
+
+  tampilkanStatus(
+    "Memeriksa data peserta...",
+    "warning"
+  );
+
+
+  /*
     NANTI BAGIAN INI AKAN
     DIHUBUNGKAN KE APPS SCRIPT.
   */
