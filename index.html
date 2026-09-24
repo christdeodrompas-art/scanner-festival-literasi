@@ -1,17 +1,31 @@
+```html
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
+
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Scanner Kehadiran Festival Literasi Sulawesi Utara</title>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0">
 
-  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <title>
+    Scanner Kehadiran Festival Literasi Sulawesi Utara
+  </title>
+
+  <script
+    src="https://unpkg.com/html5-qrcode"
+    type="text/javascript">
+  </script>
+
 
   <style>
+
     * {
       box-sizing: border-box;
     }
+
 
     body {
       margin: 0;
@@ -20,12 +34,14 @@
       color: #1f2937;
     }
 
+
     .container {
       width: 100%;
       max-width: 520px;
       margin: 0 auto;
       padding: 20px;
     }
+
 
     .header {
       background: #ffffff;
@@ -36,16 +52,19 @@
       box-shadow: 0 4px 15px rgba(0,0,0,0.08);
     }
 
+
     .header h1 {
       margin: 0 0 8px;
       font-size: 22px;
     }
+
 
     .header p {
       margin: 0;
       font-size: 14px;
       color: #6b7280;
     }
+
 
     .card {
       background: #ffffff;
@@ -55,11 +74,13 @@
       box-shadow: 0 4px 15px rgba(0,0,0,0.08);
     }
 
+
     label {
       display: block;
       font-weight: bold;
       margin-bottom: 8px;
     }
+
 
     select {
       width: 100%;
@@ -71,11 +92,13 @@
       margin-bottom: 18px;
     }
 
+
     #reader {
       width: 100%;
       overflow: hidden;
       border-radius: 12px;
     }
+
 
     .status {
       display: none;
@@ -84,7 +107,9 @@
       margin-top: 15px;
       text-align: center;
       font-weight: bold;
+      line-height: 1.5;
     }
+
 
     .success {
       display: block;
@@ -92,17 +117,20 @@
       color: #166534;
     }
 
+
     .error {
       display: block;
       background: #fee2e2;
       color: #991b1b;
     }
 
+
     .warning {
       display: block;
       background: #fef3c7;
       color: #92400e;
     }
+
 
     .participant {
       display: none;
@@ -113,6 +141,7 @@
       border: 1px solid #e5e7eb;
     }
 
+
     .participant h2 {
       margin-top: 0;
       margin-bottom: 15px;
@@ -120,9 +149,11 @@
       text-align: center;
     }
 
+
     .data-row {
       margin-bottom: 12px;
     }
+
 
     .data-label {
       font-size: 12px;
@@ -130,11 +161,13 @@
       margin-bottom: 3px;
     }
 
+
     .data-value {
       font-size: 16px;
       font-weight: bold;
       word-break: break-word;
     }
+
 
     .btn {
       width: 100%;
@@ -147,29 +180,24 @@
       margin-top: 10px;
     }
 
+
     .btn-confirm {
       background: #166534;
       color: white;
     }
 
-    .btn-confirm:hover {
-      background: #14532d;
+
+    .btn-confirm:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
     }
+
 
     .btn-cancel {
       background: #e5e7eb;
       color: #374151;
     }
 
-    .hidden {
-      display: none !important;
-    }
-
-    .loading {
-      text-align: center;
-      padding: 15px;
-      color: #6b7280;
-    }
 
     .footer {
       text-align: center;
@@ -177,408 +205,1034 @@
       color: #9ca3af;
       padding: 10px;
     }
+
   </style>
+
 </head>
+
 
 <body>
 
+
 <div class="container">
 
+
   <div class="header">
-    <h1>SCANNER KEHADIRAN</h1>
-    <p>Festival Literasi Sulawesi Utara</p>
+
+    <h1>
+      SCANNER KEHADIRAN
+    </h1>
+
+    <p>
+      Festival Literasi Sulawesi Utara
+    </p>
+
   </div>
+
 
   <div class="card">
 
-    <label for="hari">Pilih Hari Kehadiran</label>
+
+    <label for="hari">
+      Pilih Hari Kehadiran
+    </label>
+
 
     <select id="hari">
-      <option value="Hari 2">Hari 2</option>
-      <option value="Hari 3">Hari 3</option>
+
+      <option value="Hari 2">
+        Hari 2
+      </option>
+
+      <option value="Hari 3">
+        Hari 3
+      </option>
+
     </select>
+
 
     <div id="reader"></div>
 
-    <div id="status" class="status"></div>
 
-    <div id="participantBox" class="participant">
+    <div
+      id="status"
+      class="status">
+    </div>
 
-      <h2>DATA PESERTA</h2>
 
-      <div class="data-row">
-        <div class="data-label">Nama Peserta</div>
-        <div class="data-value" id="namaPeserta">-</div>
-      </div>
+    <div
+      id="participantBox"
+      class="participant">
 
-      <div class="data-row">
-        <div class="data-label">Kabupaten/Kota</div>
-        <div class="data-value" id="kabupaten">-</div>
-      </div>
 
-      <div class="data-row">
-        <div class="data-label">ID Peserta</div>
-        <div class="data-value" id="idPeserta">-</div>
-      </div>
+      <h2>
+        DATA PESERTA
+      </h2>
+
 
       <div class="data-row">
-        <div class="data-label">Kehadiran</div>
-        <div class="data-value" id="hariPeserta">-</div>
+
+        <div class="data-label">
+          Nama Peserta
+        </div>
+
+        <div
+          class="data-value"
+          id="namaPeserta">
+          -
+        </div>
+
       </div>
+
+
+      <div class="data-row">
+
+        <div class="data-label">
+          Kabupaten/Kota
+        </div>
+
+        <div
+          class="data-value"
+          id="kabupaten">
+          -
+        </div>
+
+      </div>
+
+
+      <div class="data-row">
+
+        <div class="data-label">
+          ID Peserta
+        </div>
+
+        <div
+          class="data-value"
+          id="idPeserta">
+          -
+        </div>
+
+      </div>
+
+
+      <div class="data-row">
+
+        <div class="data-label">
+          Kehadiran
+        </div>
+
+        <div
+          class="data-value"
+          id="hariPeserta">
+          -
+        </div>
+
+      </div>
+
 
       <button
         id="btnConfirm"
         class="btn btn-confirm"
         onclick="konfirmasiKehadiran()">
+
         ✓ KONFIRMASI KEHADIRAN
+
       </button>
+
 
       <button
         id="btnCancel"
         class="btn btn-cancel"
         onclick="batalScan()">
+
         BATAL / SCAN ULANG
+
       </button>
+
 
     </div>
 
+
   </div>
 
+
   <div class="footer">
+
     Sistem Kehadiran Festival Literasi Sulawesi Utara
+
   </div>
+
 
 </div>
 
+
 <script>
 
-  const API_URL =
-    "https://script.google.com/macros/s/AKfycbwO5fS0KqIH8hUvwWj1ZImgEYsaIeb_fYLkWSbO5q6bD8MuGVlMuAw7kzPMjQH-gNlg/exec";
 
-  let idPesertaAktif = "";
-  let sedangMemproses = false;
+/* =====================================================
+   KONFIGURASI API
+===================================================== */
 
-  function tampilkanStatus(pesan, tipe) {
-
-    const status = document.getElementById("status");
-
-    status.className = "status " + tipe;
-    status.innerHTML = pesan;
-  }
+const API_URL =
+  "https://script.google.com/macros/s/AKfycbwO5fS0KqIH8hUvwWj1ZImgEYsaIeb_fYLkWSbO5q6bD8MuGVlMuAw7kzPMjQH-gNlg/exec";
 
 
-  function sembunyikanStatus() {
+/* =====================================================
+   VARIABEL
+===================================================== */
 
-    const status = document.getElementById("status");
+let idPesertaAktif = "";
 
-    status.className = "status";
-    status.innerHTML = "";
-  }
+let sedangMemproses = false;
 
-
-  function tampilkanPeserta(data) {
-
-    document.getElementById("namaPeserta").textContent =
-      data.nama || "-";
-
-    document.getElementById("kabupaten").textContent =
-      data.kabupaten || "-";
-
-    document.getElementById("idPeserta").textContent =
-      data.idPeserta || "-";
-
-    document.getElementById("hariPeserta").textContent =
-      data.hari || "-";
-
-    document.getElementById("participantBox").style.display = "block";
-
-    document.getElementById("btnConfirm").style.display = "block";
-
-    document.getElementById("btnCancel").style.display = "block";
-  }
+let requestAktif = null;
 
 
-  function sembunyikanPeserta() {
+/* =====================================================
+   STATUS
+===================================================== */
 
-    document.getElementById("participantBox").style.display = "none";
+function tampilkanStatus(pesan, tipe) {
 
-    document.getElementById("namaPeserta").textContent = "-";
-    document.getElementById("kabupaten").textContent = "-";
-    document.getElementById("idPeserta").textContent = "-";
-    document.getElementById("hariPeserta").textContent = "-";
-  }
+  const status =
+    document.getElementById("status");
+
+  status.className =
+    "status " + tipe;
+
+  status.innerHTML =
+    pesan;
+
+}
 
 
-  function prosesQR(decodedText) {
+function sembunyikanStatus() {
 
-    if (sedangMemproses) {
-      return;
-    }
+  const status =
+    document.getElementById("status");
 
-    sedangMemproses = true;
+  status.className =
+    "status";
 
-    const idPeserta = decodedText.trim();
+  status.innerHTML =
+    "";
 
-    if (!idPeserta) {
+}
 
-      tampilkanStatus(
-        "✕ QR tidak berisi ID peserta.",
-        "error"
-      );
 
-      sedangMemproses = false;
+/* =====================================================
+   TAMPILKAN PESERTA
+===================================================== */
 
-      return;
-    }
+function tampilkanPeserta(data) {
 
-    idPesertaAktif = idPeserta;
+  document.getElementById(
+    "namaPeserta"
+  ).textContent =
+    data.nama || "-";
 
-    const hari = document.getElementById("hari").value;
 
-    tampilkanStatus(
-      "⏳ Memeriksa data peserta...",
-      "warning"
+  document.getElementById(
+    "kabupaten"
+  ).textContent =
+    data.kabupaten || "-";
+
+
+  document.getElementById(
+    "idPeserta"
+  ).textContent =
+    data.idPeserta || "-";
+
+
+  document.getElementById(
+    "hariPeserta"
+  ).textContent =
+    data.hari || "-";
+
+
+  document.getElementById(
+    "participantBox"
+  ).style.display =
+    "block";
+
+
+  document.getElementById(
+    "btnConfirm"
+  ).style.display =
+    "block";
+
+
+  document.getElementById(
+    "btnCancel"
+  ).style.display =
+    "block";
+
+}
+
+
+/* =====================================================
+   SEMBUNYIKAN PESERTA
+===================================================== */
+
+function sembunyikanPeserta() {
+
+  document.getElementById(
+    "participantBox"
+  ).style.display =
+    "none";
+
+
+  document.getElementById(
+    "namaPeserta"
+  ).textContent =
+    "-";
+
+
+  document.getElementById(
+    "kabupaten"
+  ).textContent =
+    "-";
+
+
+  document.getElementById(
+    "idPeserta"
+  ).textContent =
+    "-";
+
+
+  document.getElementById(
+    "hariPeserta"
+  ).textContent =
+    "-";
+
+}
+
+
+/* =====================================================
+   REQUEST JSONP
+===================================================== */
+
+function panggilAPI(parameter, callback) {
+
+  const namaCallback =
+    "apiCallback_" +
+    Date.now() +
+    "_" +
+    Math.floor(
+      Math.random() * 100000
     );
 
-    const script = document.createElement("script");
 
-    script.src =
-      API_URL +
-      "?action=lookup" +
-      "&id=" +
-      encodeURIComponent(idPeserta) +
-      "&hari=" +
-      encodeURIComponent(hari) +
-      "&callback=lookupCallback" +
-      "&t=" +
-      Date.now();
-
-    script.onerror = function() {
-
-      tampilkanStatus(
-        "✕ Gagal terhubung ke sistem.",
-        "error"
-      );
-
-      sedangMemproses = false;
-    };
-
-    document.body.appendChild(script);
-  }
+  let selesai =
+    false;
 
 
-  function lookupCallback(data) {
+  window[namaCallback] =
+    function(data) {
 
-    sedangMemproses = false;
-
-    if (!data || !data.success) {
-
-      tampilkanStatus(
-        "✕ " + (data.message || "Peserta tidak ditemukan."),
-        "error"
-      );
-
-      return;
-    }
-
-    if (data.duplicate) {
-
-      sembunyikanPeserta();
-
-      tampilkanStatus(
-        "⚠️ PESERTA SUDAH HADIR<br><br>" +
-        data.nama +
-        " sudah tercatat hadir pada " +
-        data.hari +
-        ".",
-        "warning"
-      );
-
-      return;
-    }
-
-    sembunyikanStatus();
-
-    tampilkanPeserta(data);
-  }
-
-
-  function konfirmasiKehadiran() {
-
-    if (!idPesertaAktif) {
-
-      tampilkanStatus(
-        "✕ ID peserta tidak ditemukan.",
-        "error"
-      );
-
-      return;
-    }
-
-    const hari = document.getElementById("hari").value;
-
-    const tombol =
-      document.getElementById("btnConfirm");
-
-    tombol.disabled = true;
-
-    tombol.textContent =
-      "⏳ MENYIMPAN KEHADIRAN...";
-
-    tampilkanStatus(
-      "⏳ Menyimpan kehadiran...",
-      "warning"
-    );
-
-    const script = document.createElement("script");
-
-    script.src =
-      API_URL +
-      "?action=scan" +
-      "&id=" +
-      encodeURIComponent(idPesertaAktif) +
-      "&hari=" +
-      encodeURIComponent(hari) +
-      "&callback=scanCallback" +
-      "&t=" +
-      Date.now();
-
-    script.onerror = function() {
-
-      tombol.disabled = false;
-
-      tombol.textContent =
-        "✓ KONFIRMASI KEHADIRAN";
-
-      tampilkanStatus(
-        "✕ Gagal terhubung ke sistem kehadiran.",
-        "error"
-      );
-    };
-
-    document.body.appendChild(script);
-  }
-
-
-  function scanCallback(data) {
-
-    const tombol =
-      document.getElementById("btnConfirm");
-
-    if (!data || !data.success) {
-
-      tombol.disabled = false;
-
-      tombol.textContent =
-        "✓ KONFIRMASI KEHADIRAN";
-
-      if (data && data.duplicate) {
-
-        tampilkanStatus(
-          "⚠️ PESERTA SUDAH HADIR<br><br>" +
-          data.nama +
-          " sudah tercatat hadir pada " +
-          data.hari +
-          ".",
-          "warning"
-        );
-
-        tombol.style.display = "none";
-
-      } else {
-
-        tampilkanStatus(
-          "✕ " +
-          (data.message || "Kehadiran gagal dicatat."),
-          "error"
-        );
+      if (selesai) {
+        return;
       }
 
-      return;
+
+      selesai = true;
+
+
+      clearTimeout(
+        timeout
+      );
+
+
+      cleanup();
+
+
+      callback(
+        null,
+        data
+      );
+
+    };
+
+
+  const script =
+    document.createElement("script");
+
+
+  const query =
+    Object.keys(parameter)
+      .map(function(k) {
+
+        return (
+          encodeURIComponent(k) +
+          "=" +
+          encodeURIComponent(
+            parameter[k]
+          )
+        );
+
+      })
+      .join("&");
+
+
+  script.src =
+    API_URL +
+    "?" +
+    query +
+    "&callback=" +
+    encodeURIComponent(
+      namaCallback
+    ) +
+    "&_=" +
+    Date.now();
+
+
+  script.async =
+    true;
+
+
+  script.onerror =
+    function() {
+
+      if (selesai) {
+        return;
+      }
+
+
+      selesai = true;
+
+
+      clearTimeout(
+        timeout
+      );
+
+
+      cleanup();
+
+
+      callback(
+        new Error(
+          "Koneksi ke server gagal."
+        ),
+        null
+      );
+
+    };
+
+
+  document.body.appendChild(
+    script
+  );
+
+
+  const timeout =
+    setTimeout(
+      function() {
+
+        if (selesai) {
+          return;
+        }
+
+
+        selesai = true;
+
+
+        cleanup();
+
+
+        callback(
+
+          new Error(
+            "Server tidak memberikan respons."
+          ),
+
+          null
+
+        );
+
+      },
+      15000
+    );
+
+
+  function cleanup() {
+
+    if (
+      script &&
+      script.parentNode
+    ) {
+
+      script.parentNode.removeChild(
+        script
+      );
+
     }
 
-    tombol.disabled = true;
 
-    tombol.textContent =
-      "✓ KEHADIRAN TERCATAT";
+    try {
+
+      delete window[namaCallback];
+
+    } catch (e) {
+
+      window[namaCallback] =
+        undefined;
+
+    }
+
+  }
+
+}
+
+
+/* =====================================================
+   PROSES QR
+===================================================== */
+
+function prosesQR(decodedText) {
+
+
+  if (sedangMemproses) {
+    return;
+  }
+
+
+  const idPeserta =
+    String(
+      decodedText || ""
+    ).trim();
+
+
+  if (!idPeserta) {
 
     tampilkanStatus(
-      "✓ KEHADIRAN BERHASIL DICATAT<br><br>" +
-      "<strong>" + data.nama + "</strong><br>" +
-      data.hari,
-      "success"
-    );
-
-    setTimeout(function() {
-
-      resetScanner();
-
-    }, 2500);
-  }
-
-
-  function batalScan() {
-
-    resetScanner();
-  }
-
-
-  function resetScanner() {
-
-    idPesertaAktif = "";
-
-    sedangMemproses = false;
-
-    sembunyikanPeserta();
-
-    sembunyikanStatus();
-
-    const tombol =
-      document.getElementById("btnConfirm");
-
-    tombol.disabled = false;
-
-    tombol.textContent =
-      "✓ KONFIRMASI KEHADIRAN";
-
-    tombol.style.display = "block";
-  }
-
-
-  function onScanSuccess(decodedText, decodedResult) {
-
-    prosesQR(decodedText);
-  }
-
-
-  function onScanFailure(error) {
-
-    // Tidak perlu menampilkan error
-    // karena scanner terus mencari QR
-  }
-
-
-  const scanner =
-    new Html5QrcodeScanner(
-      "reader",
-      {
-        fps: 10,
-        qrbox: {
-          width: 250,
-          height: 250
-        },
-        rememberLastUsedCamera: true
-      },
-      false
+      "✕ QR tidak berisi ID peserta.",
+      "error"
     );
 
 
-  scanner.render(
-    onScanSuccess,
-    onScanFailure
+    return;
+
+  }
+
+
+  sedangMemproses =
+    true;
+
+
+  idPesertaAktif =
+    idPeserta;
+
+
+  const hari =
+    document.getElementById(
+      "hari"
+    ).value;
+
+
+  tampilkanStatus(
+
+    "⏳ Memeriksa data peserta...",
+
+    "warning"
+
   );
+
+
+  panggilAPI(
+
+    {
+
+      action: "lookup",
+
+      id: idPeserta
+
+    },
+
+    function(error, data) {
+
+
+      sedangMemproses =
+        false;
+
+
+      if (error) {
+
+        console.error(
+          error
+        );
+
+
+        tampilkanStatus(
+
+          "✕ Gagal terhubung ke sistem.<br>" +
+          "<small>" +
+          error.message +
+          "</small>",
+
+          "error"
+
+        );
+
+
+        return;
+
+      }
+
+
+      if (
+        !data
+      ) {
+
+        tampilkanStatus(
+
+          "✕ Sistem tidak memberikan respons.",
+
+          "error"
+
+        );
+
+
+        return;
+
+      }
+
+
+      if (
+        !data.success
+      ) {
+
+        tampilkanStatus(
+
+          "✕ " +
+          (
+            data.message ||
+            "Peserta tidak ditemukan."
+          ),
+
+          "error"
+
+        );
+
+
+        return;
+
+      }
+
+
+      if (
+        !data.found
+      ) {
+
+        tampilkanStatus(
+
+          "✕ Peserta dengan ID " +
+          idPeserta +
+          " tidak ditemukan.",
+
+          "error"
+
+        );
+
+
+        return;
+
+      }
+
+
+      data.hari =
+        hari;
+
+
+      tampilkanPeserta(
+        data
+      );
+
+
+      sembunyikanStatus();
+
+    }
+
+  );
+
+}
+
+
+/* =====================================================
+   KONFIRMASI KEHADIRAN
+===================================================== */
+
+function konfirmasiKehadiran() {
+
+
+  if (
+    !idPesertaAktif
+  ) {
+
+    tampilkanStatus(
+
+      "✕ ID peserta tidak ditemukan.",
+
+      "error"
+
+    );
+
+
+    return;
+
+  }
+
+
+  if (
+    requestAktif
+  ) {
+
+    return;
+
+  }
+
+
+  const hari =
+    document.getElementById(
+      "hari"
+    ).value;
+
+
+  const tombol =
+    document.getElementById(
+      "btnConfirm"
+    );
+
+
+  tombol.disabled =
+    true;
+
+
+  tombol.textContent =
+    "⏳ MENYIMPAN KEHADIRAN...";
+
+
+  tampilkanStatus(
+
+    "⏳ Menyimpan kehadiran...",
+
+    "warning"
+
+  );
+
+
+  requestAktif =
+    true;
+
+
+  panggilAPI(
+
+    {
+
+      action: "scan",
+
+      id: idPesertaAktif,
+
+      hari: hari
+
+    },
+
+    function(error, data) {
+
+
+      requestAktif =
+        false;
+
+
+      if (error) {
+
+        tombol.disabled =
+          false;
+
+
+        tombol.textContent =
+          "✓ KONFIRMASI KEHADIRAN";
+
+
+        tampilkanStatus(
+
+          "✕ Gagal terhubung ke sistem kehadiran.<br>" +
+          "<small>" +
+          error.message +
+          "</small>",
+
+          "error"
+
+        );
+
+
+        return;
+
+      }
+
+
+      if (
+        !data
+      ) {
+
+        tombol.disabled =
+          false;
+
+
+        tombol.textContent =
+          "✓ KONFIRMASI KEHADIRAN";
+
+
+        tampilkanStatus(
+
+          "✕ Sistem tidak memberikan respons.",
+
+          "error"
+
+        );
+
+
+        return;
+
+      }
+
+
+      if (
+        data.duplicate
+      ) {
+
+        tombol.disabled =
+          true;
+
+
+        tombol.textContent =
+          "SUDAH HADIR";
+
+
+        tampilkanStatus(
+
+          "⚠️ PESERTA SUDAH HADIR<br><br>" +
+
+          (
+            data.nama ||
+            "Peserta"
+          ) +
+
+          " sudah tercatat hadir pada " +
+
+          (
+            data.hari ||
+            hari
+          ) +
+
+          ".",
+
+          "warning"
+
+        );
+
+
+        return;
+
+      }
+
+
+      if (
+        !data.success
+      ) {
+
+        tombol.disabled =
+          false;
+
+
+        tombol.textContent =
+          "✓ KONFIRMASI KEHADIRAN";
+
+
+        tampilkanStatus(
+
+          "✕ " +
+          (
+            data.message ||
+            "Kehadiran gagal dicatat."
+          ),
+
+          "error"
+
+        );
+
+
+        return;
+
+      }
+
+
+      tombol.disabled =
+        true;
+
+
+      tombol.textContent =
+        "✓ KEHADIRAN TERCATAT";
+
+
+      tampilkanStatus(
+
+        "✓ KEHADIRAN BERHASIL DICATAT<br><br>" +
+
+        "<strong>" +
+        (
+          data.nama ||
+          "Peserta"
+        ) +
+        "</strong><br>" +
+
+        (
+          data.hari ||
+          hari
+        ),
+
+        "success"
+
+      );
+
+
+      setTimeout(
+        function() {
+
+          resetScanner();
+
+        },
+        2500
+      );
+
+    }
+
+  );
+
+}
+
+
+/* =====================================================
+   BATAL / SCAN ULANG
+===================================================== */
+
+function batalScan() {
+
+  resetScanner();
+
+}
+
+
+/* =====================================================
+   RESET
+===================================================== */
+
+function resetScanner() {
+
+
+  idPesertaAktif =
+    "";
+
+
+  sedangMemproses =
+    false;
+
+
+  requestAktif =
+    null;
+
+
+  sembunyikanPeserta();
+
+
+  sembunyikanStatus();
+
+
+  const tombol =
+    document.getElementById(
+      "btnConfirm"
+    );
+
+
+  tombol.disabled =
+    false;
+
+
+  tombol.textContent =
+    "✓ KONFIRMASI KEHADIRAN";
+
+
+  tombol.style.display =
+    "block";
+
+}
+
+
+/* =====================================================
+   QR SCANNER
+===================================================== */
+
+function onScanSuccess(
+  decodedText,
+  decodedResult
+) {
+
+  prosesQR(
+    decodedText
+  );
+
+}
+
+
+function onScanFailure(
+  error
+) {
+
+  // Abaikan.
+  // Scanner terus mencari QR.
+
+}
+
+
+/* =====================================================
+   JALANKAN SCANNER
+===================================================== */
+
+const scanner =
+  new Html5QrcodeScanner(
+
+    "reader",
+
+    {
+
+      fps: 10,
+
+      qrbox: {
+
+        width: 250,
+
+        height: 250
+
+      },
+
+      rememberLastUsedCamera:
+        true
+
+    },
+
+    false
+
+  );
+
+
+scanner.render(
+  onScanSuccess,
+  onScanFailure
+);
 
 </script>
 
+
 </body>
+
 </html>
+```
