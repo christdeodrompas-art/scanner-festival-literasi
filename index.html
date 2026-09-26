@@ -413,6 +413,10 @@
 
 <div class="container">
 
+  <!-- =====================================================
+       PENGATURAN
+  ====================================================== -->
+
   <div class="card" id="settingCard">
 
     <div class="section-title">
@@ -518,29 +522,46 @@
       <strong id="activeDay">Hari 2</strong>
     </div>
 
-    <button id="btnKamera" onclick="aktifkanKamera()">
+    <button
+      id="btnKamera"
+      onclick="aktifkanKamera()">
       📷 MULAI SCAN
     </button>
 
-    <div id="cameraSelectContainer" class="camera-select">
+    <div
+      id="cameraSelectContainer"
+      class="camera-select">
 
       <label for="cameraSelect">
         Pilih Kamera
       </label>
 
-      <select id="cameraSelect" onchange="gantiKamera()"></select>
+      <select
+        id="cameraSelect"
+        onchange="gantiKamera()">
+      </select>
 
-      <div id="cameraInfo" class="camera-info">
+      <div
+        id="cameraInfo"
+        class="camera-info">
         Kamera tersedia akan muncul di sini.
       </div>
 
     </div>
 
-    <div id="status" class="status">
-      Pilih jenis akses dan hari, kemudian tekan MULAI SCAN.
+    <div
+      id="status"
+      class="status">
+      Pilih jenis akses dan hari,
+      kemudian tekan MULAI SCAN.
     </div>
 
   </div>
+
+
+  <!-- =====================================================
+       CAMERA
+  ====================================================== -->
 
   <div class="card">
 
@@ -576,7 +597,14 @@
 
   </div>
 
-  <div id="resultCard" class="card result">
+
+  <!-- =====================================================
+       HASIL PESERTA
+  ====================================================== -->
+
+  <div
+    id="resultCard"
+    class="card result">
 
     <h3 style="margin-top:0;">
       Data Peserta
@@ -598,7 +626,14 @@
 
   </div>
 
-  <div id="successCard" class="card result">
+
+  <!-- =====================================================
+       HASIL PENCATATAN
+  ====================================================== -->
+
+  <div
+    id="successCard"
+    class="card result">
 
     <div id="hasilKehadiran"></div>
 
@@ -608,6 +643,11 @@
 
   </div>
 
+
+  <!-- =====================================================
+       RIWAYAT
+  ====================================================== -->
+
   <div class="card">
 
     <h3 style="margin-top:0;">
@@ -615,42 +655,31 @@
     </h3>
 
     <div id="history">
+
       <div class="history-empty">
         Belum ada pencatatan.
       </div>
+
     </div>
 
   </div>
 
 </div>
 
+
 <script>
 
+/* =====================================================
+   APPS SCRIPT API
+===================================================== */
+
 const API_URL =
-  'https://script.google.com/macros/s/AKfycbwCdkbSG5DlSZJmM5N8g7KYU4UHuqXXEpXiP70aSr-9XEX9riRQXBUNVyj2nYqQOSPz/exec';
+  'https://script.google.com/macros/s/AKfycbwCdkbSG5DlSZjM5N8g7KYU4UHuqXXEpXiP70aSr-9XEX9riRQXBUNVyj2nYqQOSPz/exec';
 
 
-/*
-=====================================================
-PENGATURAN KETAHANAN SISTEM
-=====================================================
-
-5 detik:
-- Batas tunggu normal dari server.
-
-Retry:
-- Jika respons pertama terlambat, sistem melakukan
-  pemeriksaan ulang.
-- Backend memiliki ScriptLock + duplicate protection.
-- Jadi retry tidak membuat pencatatan ganda.
-
-Jumlah scanner:
-- Tidak dibatasi oleh halaman ini.
-- 20 perangkat dapat membuka URL yang sama.
-- Setiap perangkat memiliki sesi scanner sendiri.
-
-=====================================================
-*/
+/* =====================================================
+   KETAHANAN SISTEM
+===================================================== */
 
 const REQUEST_TIMEOUT_MS = 5000;
 
@@ -660,6 +689,10 @@ const MAX_SCAN_RETRY = 1;
 
 const MAX_LOOKUP_RETRY = 1;
 
+
+/* =====================================================
+   STATE
+===================================================== */
 
 let scanner = null;
 
@@ -672,6 +705,8 @@ let pesertaTerpilih = null;
 let daftarKamera = [];
 
 let kameraSekarang = null;
+
+let scannerSedangDibuka = false;
 
 
 /* =====================================================
@@ -694,10 +729,19 @@ function getAkses() {
 function getAksesLabel(akses) {
 
   const labels = {
-    'KEHADIRAN': 'Kehadiran Peserta',
-    'VENUE_UTAMA': 'Venue Utama',
-    'BAZAR_BUKU': 'Bazar Buku',
-    'TEATER_SENI': 'Teater / Seni'
+
+    KEHADIRAN:
+      'Kehadiran Peserta',
+
+    VENUE_UTAMA:
+      'Venue Utama',
+
+    BAZAR_BUKU:
+      'Bazar Buku',
+
+    TEATER_SENI:
+      'Teater / Seni'
+
   };
 
   return labels[akses] || akses;
@@ -719,11 +763,15 @@ function getHari() {
 
 function updateKonfigurasi() {
 
-  document.getElementById('activeAccess').textContent =
-    getAksesLabel(getAkses());
+  document
+    .getElementById('activeAccess')
+    .textContent =
+      getAksesLabel(getAkses());
 
-  document.getElementById('activeDay').textContent =
-    getHari();
+  document
+    .getElementById('activeDay')
+    .textContent =
+      getHari();
 }
 
 
@@ -742,7 +790,7 @@ document
 
 
 /* =====================================================
-   JSONP HELPER - OPTIMASI 5 DETIK
+   JSONP
 ===================================================== */
 
 function panggilJSONP(
@@ -774,7 +822,6 @@ function panggilJSONP(
 
   let selesai = false;
 
-
   let timeoutId = null;
 
 
@@ -782,15 +829,23 @@ function panggilJSONP(
 
     if (timeoutId) {
       clearTimeout(timeoutId);
+      timeoutId = null;
     }
 
+
     if (window[callbackName]) {
+
       try {
         delete window[callbackName];
-      } catch (e) {
-        window[callbackName] = undefined;
       }
+
+      catch (e) {
+        window[callbackName] =
+          undefined;
+      }
+
     }
+
 
     if (script.parentNode) {
       script.parentNode.removeChild(script);
@@ -806,6 +861,7 @@ function panggilJSONP(
         return;
       }
 
+
       selesai = true;
 
       cleanup();
@@ -813,7 +869,7 @@ function panggilJSONP(
 
       onError(
         new Error(
-          'Server belum memberikan respons dalam 5 detik.'
+          'Server belum memberikan respons.'
         )
       );
 
@@ -826,6 +882,7 @@ function panggilJSONP(
       if (selesai) {
         return;
       }
+
 
       selesai = true;
 
@@ -842,6 +899,7 @@ function panggilJSONP(
       if (selesai) {
         return;
       }
+
 
       selesai = true;
 
@@ -901,6 +959,7 @@ function panggilJSONP(
 
 /* =====================================================
    AKTIFKAN KAMERA
+   PERBAIKAN UTAMA
 ===================================================== */
 
 async function aktifkanKamera() {
@@ -915,10 +974,10 @@ async function aktifkanKamera() {
       'status'
     );
 
-  const placeholder =
-    document.getElementById(
-      'placeholder'
-    );
+
+  if (scannerSedangDibuka) {
+    return;
+  }
 
 
   if (kameraAktif) {
@@ -936,6 +995,8 @@ async function aktifkanKamera() {
   updateKonfigurasi();
 
 
+  scannerSedangDibuka = true;
+
   btn.disabled = true;
 
   btn.textContent =
@@ -946,10 +1007,21 @@ async function aktifkanKamera() {
     'status warning';
 
   status.textContent =
-    '⏳ Meminta akses kamera...';
+    '⏳ Meminta izin kamera...';
 
 
   try {
+
+    if (
+      !window.isSecureContext
+    ) {
+
+      throw new Error(
+        'Scanner harus dibuka melalui HTTPS. Pastikan halaman GitHub menggunakan HTTPS.'
+      );
+
+    }
+
 
     if (
       !navigator.mediaDevices ||
@@ -963,87 +1035,43 @@ async function aktifkanKamera() {
     }
 
 
-    const stream =
-      await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: false
-      });
+    /*
+    =====================================================
+    PERBAIKAN PENTING
+
+    Tidak lagi:
+
+    getUserMedia()
+    → stop()
+    → getCameras()
+    → start(cameraId)
+
+    Sekarang Html5Qrcode langsung membuka kamera
+    belakang menggunakan facingMode environment.
+    =====================================================
+    */
+
+    await mulaiScannerModeBelakang();
 
 
-    stream
-      .getTracks()
-      .forEach(function(track) {
-        track.stop();
-      });
+    /*
+    Setelah kamera berhasil aktif,
+    baru ambil daftar kamera.
+    */
 
+    await muatDaftarKamera();
+
+
+    status.className =
+      'status success';
 
     status.textContent =
-      '⏳ Mendeteksi kamera yang tersedia...';
+      '✅ Kamera aktif. Arahkan QR peserta ke kotak hijau.';
 
 
-    daftarKamera =
-      await Html5Qrcode.getCameras();
+  }
 
-
-    if (
-      !daftarKamera ||
-      daftarKamera.length === 0
-    ) {
-
-      throw new Error(
-        'Tidak ada kamera yang terdeteksi.'
-      );
-
-    }
-
-
-    kameraSekarang =
-      daftarKamera[0].id;
-
-
-    const kameraBelakang =
-      daftarKamera.find(function(camera) {
-
-        const nama =
-          String(
-            camera.label || ''
-          ).toLowerCase();
-
-        return (
-          nama.includes('back') ||
-          nama.includes('rear') ||
-          nama.includes('environment') ||
-          nama.includes('belakang')
-        );
-
-      });
-
-
-    if (kameraBelakang) {
-
-      kameraSekarang =
-        kameraBelakang.id;
-
-    }
-
-
-    tampilkanDaftarKamera();
-
-
-    document
-      .getElementById(
-        'cameraSelect'
-      )
-      .value =
-      kameraSekarang;
-
-
-    await mulaiScannerDenganKamera(
-      kameraSekarang
-    );
-
-
-  } catch (error) {
+  catch (error) {
 
     console.error(
       'KAMERA ERROR:',
@@ -1066,10 +1094,13 @@ async function aktifkanKamera() {
 
     status.textContent =
       '❌ Kamera gagal dibuka: ' +
-      (
-        error.message ||
-        String(error)
-      );
+      jelaskanErrorKamera(error);
+
+  }
+
+  finally {
+
+    scannerSedangDibuka = false;
 
   }
 
@@ -1077,7 +1108,204 @@ async function aktifkanKamera() {
 
 
 /* =====================================================
-   DAFTAR KAMERA
+   SCANNER MODE BELAKANG
+===================================================== */
+
+async function mulaiScannerModeBelakang() {
+
+  const btn =
+    document.getElementById(
+      'btnKamera'
+    );
+
+  const status =
+    document.getElementById(
+      'status'
+    );
+
+  const placeholder =
+    document.getElementById(
+      'placeholder'
+    );
+
+
+  await bersihkanScanner();
+
+
+  document
+    .getElementById('reader')
+    .innerHTML = '';
+
+
+  scanner =
+    new Html5Qrcode(
+      'reader'
+    );
+
+
+  const config = {
+
+    fps: 10,
+
+    qrbox:
+      function(width, height) {
+
+        const ukuran =
+          Math.floor(
+            Math.min(
+              width,
+              height
+            ) * 0.65
+          );
+
+
+        const ukuranFinal =
+          Math.max(
+            180,
+            Math.min(
+              300,
+              ukuran
+            )
+          );
+
+
+        return {
+
+          width:
+            ukuranFinal,
+
+          height:
+            ukuranFinal
+
+        };
+
+      },
+
+    disableFlip: false,
+
+    formatsToSupport: [
+      Html5QrcodeSupportedFormats.QR_CODE
+    ]
+
+  };
+
+
+  status.className =
+    'status warning';
+
+  status.textContent =
+    '⏳ Membuka kamera belakang...';
+
+
+  /*
+  =====================================================
+  FACING MODE ENVIRONMENT
+
+  Ini meminta kamera belakang pada HP.
+  Tidak perlu memilih cameraId terlebih dahulu.
+  =====================================================
+  */
+
+  await scanner.start(
+
+    {
+      facingMode:
+        'environment'
+    },
+
+    config,
+
+    function(decodedText) {
+
+      qrBerhasil(
+        decodedText
+      );
+
+    },
+
+    function() {}
+
+  );
+
+
+  kameraAktif = true;
+
+
+  placeholder.classList.add(
+    'hidden'
+  );
+
+
+  btn.disabled = false;
+
+  btn.textContent =
+    '📷 KAMERA AKTIF';
+
+
+  pastikanVideoTerlihat();
+
+}
+
+
+/* =====================================================
+   MUAT DAFTAR KAMERA
+===================================================== */
+
+async function muatDaftarKamera() {
+
+  try {
+
+    const cameras =
+      await Html5Qrcode.getCameras();
+
+
+    if (
+      !cameras ||
+      cameras.length === 0
+    ) {
+
+      console.warn(
+        'Tidak ada daftar kamera yang dikembalikan.'
+      );
+
+      return;
+
+    }
+
+
+    daftarKamera =
+      cameras;
+
+
+    /*
+    Jika kamera aktif sudah berhasil melalui
+    facingMode environment, kita tidak perlu
+    memaksa pergantian kamera.
+    */
+
+    tampilkanDaftarKamera();
+
+  }
+
+  catch (error) {
+
+    console.warn(
+      'DAFTAR KAMERA TIDAK TERSEDIA:',
+      error
+    );
+
+    /*
+    Ini BUKAN error fatal.
+    Scanner tetap dapat digunakan.
+    */
+
+  }
+
+}
+
+
+/* =====================================================
+   TAMPILKAN DAFTAR KAMERA
 ===================================================== */
 
 function tampilkanDaftarKamera() {
@@ -1142,9 +1370,10 @@ function tampilkanDaftarKamera() {
   );
 
 
-  select.value =
-    kameraSekarang;
-
+  /*
+  Jangan memaksa value kamera aktif.
+  Browser bisa memberikan cameraId berbeda.
+  */
 
   container.classList.add(
     'show'
@@ -1159,7 +1388,86 @@ function tampilkanDaftarKamera() {
 
 
 /* =====================================================
-   MULAI SCANNER
+   GANTI KAMERA
+===================================================== */
+
+async function gantiKamera() {
+
+  const select =
+    document.getElementById(
+      'cameraSelect'
+    );
+
+
+  const cameraId =
+    select.value;
+
+
+  if (!cameraId) {
+    return;
+  }
+
+
+  const status =
+    document.getElementById(
+      'status'
+    );
+
+
+  try {
+
+    status.className =
+      'status warning';
+
+    status.textContent =
+      '⏳ Mengganti kamera...';
+
+
+    await mulaiScannerDenganKamera(
+      cameraId
+    );
+
+
+    kameraSekarang =
+      cameraId;
+
+
+    status.className =
+      'status success';
+
+    status.textContent =
+      '✅ Kamera berhasil diganti.';
+
+
+  }
+
+  catch (error) {
+
+    console.error(
+      'GANTI KAMERA ERROR:',
+      error
+    );
+
+
+    kameraAktif = false;
+
+
+    status.className =
+      'status error';
+
+
+    status.textContent =
+      '❌ Gagal mengganti kamera: ' +
+      jelaskanErrorKamera(error);
+
+  }
+
+}
+
+
+/* =====================================================
+   MULAI SCANNER DENGAN CAMERA ID
+   Digunakan hanya ketika user memilih kamera lain.
 ===================================================== */
 
 async function mulaiScannerDenganKamera(
@@ -1191,19 +1499,12 @@ async function mulaiScannerDenganKamera(
   }
 
 
-  if (scanner) {
+  await bersihkanScanner();
 
-    try {
-      await scanner.stop();
-    } catch (e) {}
 
-    try {
-      await scanner.clear();
-    } catch (e) {}
-
-    scanner = null;
-
-  }
+  document
+    .getElementById('reader')
+    .innerHTML = '';
 
 
   scanner =
@@ -1228,19 +1529,23 @@ async function mulaiScannerDenganKamera(
           );
 
 
-        return {
-
-          width:
-            Math.min(
-              300,
-              ukuran
-            ),
-
-          height:
+        const ukuranFinal =
+          Math.max(
+            180,
             Math.min(
               300,
               ukuran
             )
+          );
+
+
+        return {
+
+          width:
+            ukuranFinal,
+
+          height:
+            ukuranFinal
 
         };
 
@@ -1284,6 +1589,10 @@ async function mulaiScannerDenganKamera(
   kameraAktif = true;
 
 
+  kameraSekarang =
+    cameraId;
+
+
   placeholder.classList.add(
     'hidden'
   );
@@ -1295,96 +1604,73 @@ async function mulaiScannerDenganKamera(
     '📷 KAMERA AKTIF';
 
 
-  status.className =
-    'status success';
-
-  status.textContent =
-    '✅ Kamera aktif. Arahkan QR peserta ke kotak hijau.';
-
-
   pastikanVideoTerlihat();
 
 }
 
 
 /* =====================================================
-   GANTI KAMERA
+   BERSIHKAN SCANNER
 ===================================================== */
 
-async function gantiKamera() {
+async function bersihkanScanner() {
 
-  const select =
-    document.getElementById(
-      'cameraSelect'
-    );
+  if (!scanner) {
 
+    kameraAktif = false;
 
-  const cameraId =
-    select.value;
-
-
-  if (!cameraId) {
     return;
+
   }
-
-
-  kameraSekarang =
-    cameraId;
-
-
-  const status =
-    document.getElementById(
-      'status'
-    );
 
 
   try {
 
-    status.className =
-      'status warning';
+    if (
+      scanner.getState &&
+      scanner.getState() ===
+        Html5QrcodeScannerState.SCANNING
+    ) {
 
-    status.textContent =
-      '⏳ Mengganti kamera...';
+      await scanner.stop();
 
-
-    await mulaiScannerDenganKamera(
-      cameraId
-    );
-
-
-    status.className =
-      'status success';
-
-    status.textContent =
-      '✅ Kamera berhasil diganti.';
-
-
-  } catch (error) {
-
-    console.error(error);
-
-
-    kameraAktif = false;
-
-
-    status.className =
-      'status error';
-
-
-    status.textContent =
-      '❌ Gagal mengganti kamera: ' +
-      (
-        error.message ||
-        error
-      );
+    }
 
   }
+
+  catch (e) {
+
+    console.warn(
+      'STOP SCANNER:',
+      e
+    );
+
+  }
+
+
+  try {
+    await scanner.clear();
+  }
+
+  catch (e) {
+
+    console.warn(
+      'CLEAR SCANNER:',
+      e
+    );
+
+  }
+
+
+  scanner = null;
+
+  kameraAktif = false;
 
 }
 
 
 /* =====================================================
-   VIDEO
+   PASTIKAN VIDEO TERLIHAT
 ===================================================== */
 
 function pastikanVideoTerlihat() {
@@ -1398,51 +1684,177 @@ function pastikanVideoTerlihat() {
         );
 
 
-      if (video) {
-
-        video.style.display =
-          'block';
-
-        video.style.width =
-          '100%';
-
-        video.style.height =
-          'auto';
-
-        video.style.minHeight =
-          '300px';
-
-        video.style.objectFit =
-          'cover';
+      if (!video) {
+        return;
+      }
 
 
-        try {
+      video.style.display =
+        'block';
 
-          if (video.paused) {
+      video.style.width =
+        '100%';
+
+      video.style.height =
+        'auto';
+
+      video.style.minHeight =
+        '300px';
+
+      video.style.objectFit =
+        'cover';
+
+
+      try {
+
+        if (
+          video.paused
+        ) {
+
+          const promise =
             video.play();
+
+
+          if (
+            promise &&
+            typeof promise.catch ===
+              'function'
+          ) {
+
+            promise.catch(
+              function() {}
+            );
+
           }
 
-        } catch (e) {}
+        }
 
       }
 
+      catch (e) {}
+
     },
-    800
+    500
   );
 
 }
 
 
 /* =====================================================
-   QR TERBACA
+   ERROR KAMERA
+===================================================== */
+
+function jelaskanErrorKamera(
+  error
+) {
+
+  const name =
+    error &&
+    error.name
+      ? error.name
+      : '';
+
+
+  const message =
+    error &&
+    error.message
+      ? error.message
+      : String(error || '');
+
+
+  if (
+    name ===
+    'NotAllowedError'
+  ) {
+
+    return (
+      'Izin kamera ditolak browser/perangkat. ' +
+      'Pastikan scanner dibuka melalui HTTPS dan izin kamera situs diizinkan.'
+    );
+
+  }
+
+
+  if (
+    name ===
+    'PermissionDeniedError'
+  ) {
+
+    return (
+      'Akses kamera ditolak oleh browser atau sistem perangkat.'
+    );
+
+  }
+
+
+  if (
+    name ===
+    'NotFoundError'
+  ) {
+
+    return (
+      'Kamera tidak ditemukan pada perangkat.'
+    );
+
+  }
+
+
+  if (
+    name ===
+    'NotReadableError'
+  ) {
+
+    return (
+      'Kamera sedang digunakan aplikasi/browser lain.'
+    );
+
+  }
+
+
+  if (
+    name ===
+    'OverconstrainedError'
+  ) {
+
+    return (
+      'Kamera belakang tidak dapat digunakan dengan pengaturan ini.'
+    );
+
+  }
+
+
+  if (
+    name ===
+    'SecurityError'
+  ) {
+
+    return (
+      'Browser memblokir akses kamera karena alasan keamanan. Pastikan menggunakan HTTPS.'
+    );
+
+  }
+
+
+  return message ||
+    'Terjadi kesalahan saat membuka kamera.';
+
+}
+
+
+/* =====================================================
+   QR BERHASIL
 ===================================================== */
 
 async function qrBerhasil(
   decodedText
 ) {
 
-  if (sedangMemproses) {
+  if (
+    sedangMemproses
+  ) {
+
     return;
+
   }
 
 
@@ -1495,35 +1907,13 @@ async function qrBerhasil(
 
 async function hentikanScanner() {
 
-  if (!scanner) {
-
-    kameraAktif = false;
-
-    return;
-
-  }
-
-
-  try {
-    await scanner.stop();
-  } catch (e) {}
-
-
-  try {
-    await scanner.clear();
-  } catch (e) {}
-
-
-  scanner = null;
-
-  kameraAktif = false;
+  await bersihkanScanner();
 
 }
 
 
 /* =====================================================
    CARI PESERTA
-   DENGAN RETRY 1X
 ===================================================== */
 
 function cariPeserta(
@@ -1748,9 +2138,7 @@ function tampilkanPeserta(
 
     '<div>' +
     '<strong>Hari</strong>: ' +
-    escapeHtml(
-      hari
-    ) +
+    escapeHtml(hari) +
     '</div>' +
 
     '</div>';
@@ -1775,12 +2163,14 @@ function tampilkanPeserta(
 
 
 /* =====================================================
-   KONFIRMASI AKSES
+   KONFIRMASI
 ===================================================== */
 
 function konfirmasiAkses() {
 
-  if (!pesertaTerpilih) {
+  if (
+    !pesertaTerpilih
+  ) {
 
     tampilkanError(
       'Data peserta belum tersedia.'
@@ -1837,7 +2227,6 @@ function konfirmasiAkses() {
 
 /* =====================================================
    KIRIM PENCATATAN
-   RETRY AMAN
 ===================================================== */
 
 function kirimPencatatan(
@@ -1902,7 +2291,6 @@ function kirimPencatatan(
 
       btn.disabled = false;
 
-
       btn.textContent =
         '✅ KONFIRMASI';
 
@@ -1934,10 +2322,6 @@ function kirimPencatatan(
       }
 
 
-      /*
-      SUCCESS NORMAL
-      */
-
       if (
         data.success === true &&
         data.duplicate !== true
@@ -1952,13 +2336,10 @@ function kirimPencatatan(
       }
 
 
-      /*
-      DUPLICATE
-      */
-
       if (
         data.duplicate === true ||
-        data.status === 'SUDAH HADIR'
+        data.status === 'SUDAH HADIR' ||
+        data.status === 'SUDAH TERSIMPAN'
       ) {
 
         tampilkanSudahTersimpan(
@@ -1969,10 +2350,6 @@ function kirimPencatatan(
 
       }
 
-
-      /*
-      ERROR DARI BACKEND
-      */
 
       tampilkanError(
         data.message ||
@@ -1987,15 +2364,6 @@ function kirimPencatatan(
         'SCAN ERROR:',
         error
       );
-
-
-      /*
-      JANGAN LANGSUNG MENYATAKAN GAGAL.
-
-      Karena request pertama mungkin sudah
-      berhasil menulis ke spreadsheet tetapi
-      respons JSONP terlambat.
-      */
 
 
       if (
@@ -2025,7 +2393,6 @@ function kirimPencatatan(
 
       btn.disabled = false;
 
-
       btn.textContent =
         '✅ KONFIRMASI';
 
@@ -2042,7 +2409,7 @@ function kirimPencatatan(
 
 
 /* =====================================================
-   RETRY PENCATATAN
+   RETRY
 ===================================================== */
 
 function ulangiPencatatan(
@@ -2093,7 +2460,8 @@ function tampilkanBerhasil(
     .getElementById(
       'resultCard'
     )
-    .classList.remove(
+    .classList
+    .remove(
       'show'
     );
 
@@ -2206,7 +2574,8 @@ function tampilkanSudahTersimpan(
     .getElementById(
       'resultCard'
     )
-    .classList.remove(
+    .classList
+    .remove(
       'show'
     );
 
@@ -2239,8 +2608,8 @@ function tampilkanSudahTersimpan(
 
   hasil.innerHTML =
 
-    '<div class="success-box">' +
-    '✅ PENCATATAN SUDAH TERSIMPAN' +
+    '<div class="duplicate-box">' +
+    '⚠️ PENCATATAN SUDAH TERSIMPAN' +
     '</div>' +
 
     '<div class="participant-info">' +
@@ -2288,11 +2657,11 @@ function tampilkanSudahTersimpan(
 
 
   status.className =
-    'status success';
+    'status warning';
 
 
   status.textContent =
-    '✅ Pencatatan sudah tersimpan. Respons server sebelumnya terlambat.';
+    '⚠️ Pencatatan sudah tersimpan.';
 
 
   tambahRiwayat(
@@ -2300,108 +2669,6 @@ function tampilkanSudahTersimpan(
     labelAkses,
     hari
   );
-
-
-  pesertaTerpilih = null;
-
-}
-
-
-/* =====================================================
-   DUPLIKAT
-===================================================== */
-
-function tampilkanDuplikat(
-  data
-) {
-
-  document
-    .getElementById(
-      'resultCard'
-    )
-    .classList.remove(
-      'show'
-    );
-
-
-  const successCard =
-    document.getElementById(
-      'successCard'
-    );
-
-
-  const hasil =
-    document.getElementById(
-      'hasilKehadiran'
-    );
-
-
-  const akses =
-    getAkses();
-
-
-  const hari =
-    getHari();
-
-
-  hasil.innerHTML =
-
-    '<div class="duplicate-box">' +
-    '⚠️ PENCATATAN SUDAH ADA' +
-    '</div>' +
-
-    '<div class="participant-info">' +
-
-    '<div>' +
-    '<strong>Nama</strong>: ' +
-    escapeHtml(
-      pesertaTerpilih.nama || ''
-    ) +
-    '</div>' +
-
-    '<div>' +
-    '<strong>ID Peserta</strong>: ' +
-    escapeHtml(
-      pesertaTerpilih.idPeserta || ''
-    ) +
-    '</div>' +
-
-    '<div>' +
-    '<strong>Jenis Akses</strong>: ' +
-    escapeHtml(
-      getAksesLabel(
-        akses
-      )
-    ) +
-    '</div>' +
-
-    '<div>' +
-    '<strong>Hari</strong>: ' +
-    escapeHtml(
-      hari
-    ) +
-    '</div>' +
-
-    '</div>';
-
-
-  successCard.classList.add(
-    'show'
-  );
-
-
-  const status =
-    document.getElementById(
-      'status'
-    );
-
-
-  status.className =
-    'status warning';
-
-
-  status.textContent =
-    '⚠️ Peserta sudah tercatat untuk akses tersebut pada hari ini.';
 
 
   pesertaTerpilih = null;
@@ -2471,13 +2738,9 @@ function tambahRiwayat(
     ) +
 
     '<br>' +
-    escapeHtml(
-      akses
-    ) +
+    escapeHtml(akses) +
     ' — ' +
-    escapeHtml(
-      hari
-    ) +
+    escapeHtml(hari) +
 
     '<br>' +
     waktu;
@@ -2503,7 +2766,8 @@ function tampilkanError(
     .getElementById(
       'resultCard'
     )
-    .classList.remove(
+    .classList
+    .remove(
       'show'
     );
 
@@ -2512,7 +2776,8 @@ function tampilkanError(
     .getElementById(
       'successCard'
     )
-    .classList.remove(
+    .classList
+    .remove(
       'show'
     );
 
@@ -2552,7 +2817,8 @@ async function scanLagi() {
     .getElementById(
       'resultCard'
     )
-    .classList.remove(
+    .classList
+    .remove(
       'show'
     );
 
@@ -2561,7 +2827,8 @@ async function scanLagi() {
     .getElementById(
       'successCard'
     )
-    .classList.remove(
+    .classList
+    .remove(
       'show'
     );
 
@@ -2582,14 +2849,45 @@ async function scanLagi() {
 
   try {
 
-    await mulaiScannerDenganKamera(
+    /*
+    Jika kita sudah memiliki cameraId
+    dari daftar kamera, gunakan kamera tersebut.
+    Kalau belum ada, gunakan kamera belakang.
+    */
+
+    if (
       kameraSekarang
-    );
+    ) {
+
+      await mulaiScannerDenganKamera(
+        kameraSekarang
+      );
+
+    }
+
+    else {
+
+      await mulaiScannerModeBelakang();
+
+      await muatDaftarKamera();
+
+    }
 
 
-  } catch (error) {
+    status.className =
+      'status success';
+
+
+    status.textContent =
+      '✅ Kamera aktif. Arahkan QR peserta ke kotak hijau.';
+
+
+  }
+
+  catch (error) {
 
     console.error(
+      'SCAN LAGI ERROR:',
       error
     );
 
@@ -2600,10 +2898,7 @@ async function scanLagi() {
 
     status.textContent =
       '❌ Kamera gagal dinyalakan kembali: ' +
-      (
-        error.message ||
-        error
-      );
+      jelaskanErrorKamera(error);
 
   }
 
@@ -2673,6 +2968,28 @@ window.addEventListener(
 
     status.textContent =
       'Pilih jenis akses dan hari, kemudian tekan MULAI SCAN.';
+
+  }
+);
+
+
+/* =====================================================
+   SEBELUM HALAMAN DITUTUP
+===================================================== */
+
+window.addEventListener(
+  'beforeunload',
+  function() {
+
+    if (scanner) {
+
+      try {
+        scanner.stop();
+      }
+
+      catch (e) {}
+
+    }
 
   }
 );
