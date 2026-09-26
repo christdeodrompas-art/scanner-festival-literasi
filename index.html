@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -413,10 +412,6 @@
 
 <div class="container">
 
-  <!-- =====================================================
-       PENGATURAN
-  ====================================================== -->
-
   <div class="card" id="settingCard">
 
     <div class="section-title">
@@ -483,7 +478,8 @@
           type="radio"
           name="hari"
           id="hari1"
-          value="Hari 1">
+          value="Hari 1"
+          checked>
         <label for="hari1">
           Hari 1
         </label>
@@ -494,8 +490,7 @@
           type="radio"
           name="hari"
           id="hari2"
-          value="Hari 2"
-          checked>
+          value="Hari 2">
         <label for="hari2">
           Hari 2
         </label>
@@ -519,7 +514,7 @@
       <br>
       <strong id="activeAccess">Kehadiran Peserta</strong>
       —
-      <strong id="activeDay">Hari 2</strong>
+      <strong id="activeDay">Hari 1</strong>
     </div>
 
     <button
@@ -558,11 +553,6 @@
 
   </div>
 
-
-  <!-- =====================================================
-       CAMERA
-  ====================================================== -->
-
   <div class="card">
 
     <div id="cameraContainer">
@@ -597,11 +587,6 @@
 
   </div>
 
-
-  <!-- =====================================================
-       HASIL PESERTA
-  ====================================================== -->
-
   <div
     id="resultCard"
     class="card result">
@@ -626,11 +611,6 @@
 
   </div>
 
-
-  <!-- =====================================================
-       HASIL PENCATATAN
-  ====================================================== -->
-
   <div
     id="successCard"
     class="card result">
@@ -642,11 +622,6 @@
     </button>
 
   </div>
-
-
-  <!-- =====================================================
-       RIWAYAT
-  ====================================================== -->
 
   <div class="card">
 
@@ -666,7 +641,6 @@
 
 </div>
 
-
 <script>
 
 /* =====================================================
@@ -674,19 +648,16 @@
 ===================================================== */
 
 const API_URL =
-  'https://script.google.com/macros/s/AKfycbwCdkbSG5DlSZjM5N8g7KYU4UHuqXXEpXiP70aSr-9XEX9riRQXBUNVyj2nYqQOSPz/exec';
+  'https://script.google.com/macros/s/AKfycbxe2Oo1ULV6z82Ik1x44tMOCHLOT2ARcKxta4ulqzIdfu-7BG2aXhR6X4-L8GjnG_oz/exec';
 
 
 /* =====================================================
    KETAHANAN SISTEM
 ===================================================== */
 
-const REQUEST_TIMEOUT_MS = 5000;
-
-const RETRY_DELAY_MS = 300;
-
+const REQUEST_TIMEOUT_MS = 8000;
+const RETRY_DELAY_MS = 500;
 const MAX_SCAN_RETRY = 1;
-
 const MAX_LOOKUP_RETRY = 1;
 
 
@@ -695,17 +666,11 @@ const MAX_LOOKUP_RETRY = 1;
 ===================================================== */
 
 let scanner = null;
-
 let kameraAktif = false;
-
 let sedangMemproses = false;
-
 let pesertaTerpilih = null;
-
 let daftarKamera = [];
-
 let kameraSekarang = null;
-
 let scannerSedangDibuka = false;
 
 
@@ -723,6 +688,7 @@ function getAkses() {
   return selected
     ? selected.value
     : 'KEHADIRAN';
+
 }
 
 
@@ -745,6 +711,7 @@ function getAksesLabel(akses) {
   };
 
   return labels[akses] || akses;
+
 }
 
 
@@ -757,7 +724,8 @@ function getHari() {
 
   return selected
     ? selected.value
-    : 'Hari 2';
+    : 'Hari 1';
+
 }
 
 
@@ -772,6 +740,7 @@ function updateKonfigurasi() {
     .getElementById('activeDay')
     .textContent =
       getHari();
+
 }
 
 
@@ -805,7 +774,6 @@ function panggilJSONP(
     timeoutMs ||
     REQUEST_TIMEOUT_MS;
 
-
   const callbackName =
     prefix +
     '_' +
@@ -815,15 +783,11 @@ function panggilJSONP(
       Math.random() * 1000000
     );
 
-
   const script =
     document.createElement('script');
 
-
   let selesai = false;
-
   let timeoutId = null;
-
 
   function cleanup() {
 
@@ -832,20 +796,11 @@ function panggilJSONP(
       timeoutId = null;
     }
 
-
-    if (window[callbackName]) {
-
-      try {
-        delete window[callbackName];
-      }
-
-      catch (e) {
-        window[callbackName] =
-          undefined;
-      }
-
+    try {
+      delete window[callbackName];
+    } catch (e) {
+      window[callbackName] = undefined;
     }
-
 
     if (script.parentNode) {
       script.parentNode.removeChild(script);
@@ -861,11 +816,8 @@ function panggilJSONP(
         return;
       }
 
-
       selesai = true;
-
       cleanup();
-
 
       onError(
         new Error(
@@ -883,9 +835,7 @@ function panggilJSONP(
         return;
       }
 
-
       selesai = true;
-
       cleanup();
 
       onSuccess(data);
@@ -900,17 +850,13 @@ function panggilJSONP(
         return;
       }
 
-
       selesai = true;
-
       cleanup();
-
 
       console.error(
         'JSONP ERROR:',
         error
       );
-
 
       onError(
         new Error(
@@ -946,9 +892,7 @@ function panggilJSONP(
       callbackName
     );
 
-
   script.async = true;
-
 
   document.body.appendChild(
     script
@@ -959,7 +903,6 @@ function panggilJSONP(
 
 /* =====================================================
    AKTIFKAN KAMERA
-   PERBAIKAN UTAMA
 ===================================================== */
 
 async function aktifkanKamera() {
@@ -989,11 +932,11 @@ async function aktifkanKamera() {
       '✅ Kamera aktif. Arahkan QR peserta ke kotak hijau.';
 
     return;
+
   }
 
 
   updateKonfigurasi();
-
 
   scannerSedangDibuka = true;
 
@@ -1001,7 +944,6 @@ async function aktifkanKamera() {
 
   btn.textContent =
     '⏳ MEMBUKA KAMERA...';
-
 
   status.className =
     'status warning';
@@ -1012,12 +954,10 @@ async function aktifkanKamera() {
 
   try {
 
-    if (
-      !window.isSecureContext
-    ) {
+    if (!window.isSecureContext) {
 
       throw new Error(
-        'Scanner harus dibuka melalui HTTPS. Pastikan halaman GitHub menggunakan HTTPS.'
+        'Scanner harus dibuka melalui HTTPS.'
       );
 
     }
@@ -1035,29 +975,7 @@ async function aktifkanKamera() {
     }
 
 
-    /*
-    =====================================================
-    PERBAIKAN PENTING
-
-    Tidak lagi:
-
-    getUserMedia()
-    → stop()
-    → getCameras()
-    → start(cameraId)
-
-    Sekarang Html5Qrcode langsung membuka kamera
-    belakang menggunakan facingMode environment.
-    =====================================================
-    */
-
     await mulaiScannerModeBelakang();
-
-
-    /*
-    Setelah kamera berhasil aktif,
-    baru ambil daftar kamera.
-    */
 
     await muatDaftarKamera();
 
@@ -1068,7 +986,6 @@ async function aktifkanKamera() {
     status.textContent =
       '✅ Kamera aktif. Arahkan QR peserta ke kotak hijau.';
 
-
   }
 
   catch (error) {
@@ -1078,19 +995,15 @@ async function aktifkanKamera() {
       error
     );
 
-
     kameraAktif = false;
-
 
     btn.disabled = false;
 
     btn.textContent =
       '📷 MULAI SCAN';
 
-
     status.className =
       'status error';
-
 
     status.textContent =
       '❌ Kamera gagal dibuka: ' +
@@ -1158,7 +1071,6 @@ async function mulaiScannerModeBelakang() {
             ) * 0.65
           );
 
-
         const ukuranFinal =
           Math.max(
             180,
@@ -1168,15 +1080,12 @@ async function mulaiScannerModeBelakang() {
             )
           );
 
-
         return {
-
           width:
             ukuranFinal,
 
           height:
             ukuranFinal
-
         };
 
       },
@@ -1196,15 +1105,6 @@ async function mulaiScannerModeBelakang() {
   status.textContent =
     '⏳ Membuka kamera belakang...';
 
-
-  /*
-  =====================================================
-  FACING MODE ENVIRONMENT
-
-  Ini meminta kamera belakang pada HP.
-  Tidak perlu memilih cameraId terlebih dahulu.
-  =====================================================
-  */
 
   await scanner.start(
 
@@ -1265,7 +1165,7 @@ async function muatDaftarKamera() {
     ) {
 
       console.warn(
-        'Tidak ada daftar kamera yang dikembalikan.'
+        'Tidak ada daftar kamera.'
       );
 
       return;
@@ -1277,12 +1177,6 @@ async function muatDaftarKamera() {
       cameras;
 
 
-    /*
-    Jika kamera aktif sudah berhasil melalui
-    facingMode environment, kita tidak perlu
-    memaksa pergantian kamera.
-    */
-
     tampilkanDaftarKamera();
 
   }
@@ -1293,11 +1187,6 @@ async function muatDaftarKamera() {
       'DAFTAR KAMERA TIDAK TERSEDIA:',
       error
     );
-
-    /*
-    Ini BUKAN error fatal.
-    Scanner tetap dapat digunakan.
-    */
 
   }
 
@@ -1337,7 +1226,6 @@ function tampilkanDaftarKamera() {
           'option'
         );
 
-
       option.value =
         camera.id;
 
@@ -1370,11 +1258,6 @@ function tampilkanDaftarKamera() {
   );
 
 
-  /*
-  Jangan memaksa value kamera aktif.
-  Browser bisa memberikan cameraId berbeda.
-  */
-
   container.classList.add(
     'show'
   );
@@ -1397,7 +1280,6 @@ async function gantiKamera() {
     document.getElementById(
       'cameraSelect'
     );
-
 
   const cameraId =
     select.value;
@@ -1438,7 +1320,6 @@ async function gantiKamera() {
     status.textContent =
       '✅ Kamera berhasil diganti.';
 
-
   }
 
   catch (error) {
@@ -1455,7 +1336,6 @@ async function gantiKamera() {
     status.className =
       'status error';
 
-
     status.textContent =
       '❌ Gagal mengganti kamera: ' +
       jelaskanErrorKamera(error);
@@ -1467,7 +1347,6 @@ async function gantiKamera() {
 
 /* =====================================================
    MULAI SCANNER DENGAN CAMERA ID
-   Digunakan hanya ketika user memilih kamera lain.
 ===================================================== */
 
 async function mulaiScannerDenganKamera(
@@ -1528,7 +1407,6 @@ async function mulaiScannerDenganKamera(
             ) * 0.65
           );
 
-
         const ukuranFinal =
           Math.max(
             180,
@@ -1538,15 +1416,12 @@ async function mulaiScannerDenganKamera(
             )
           );
 
-
         return {
-
           width:
             ukuranFinal,
 
           height:
             ukuranFinal
-
         };
 
       },
@@ -1587,7 +1462,6 @@ async function mulaiScannerDenganKamera(
 
 
   kameraAktif = true;
-
 
   kameraSekarang =
     cameraId;
@@ -1649,7 +1523,9 @@ async function bersihkanScanner() {
 
 
   try {
+
     await scanner.clear();
+
   }
 
   catch (e) {
@@ -1707,9 +1583,7 @@ function pastikanVideoTerlihat() {
 
       try {
 
-        if (
-          video.paused
-        ) {
+        if (video.paused) {
 
           const promise =
             video.play();
@@ -1768,8 +1642,7 @@ function jelaskanErrorKamera(
   ) {
 
     return (
-      'Izin kamera ditolak browser/perangkat. ' +
-      'Pastikan scanner dibuka melalui HTTPS dan izin kamera situs diizinkan.'
+      'Izin kamera ditolak. Pastikan izin kamera situs diizinkan.'
     );
 
   }
@@ -1781,7 +1654,7 @@ function jelaskanErrorKamera(
   ) {
 
     return (
-      'Akses kamera ditolak oleh browser atau sistem perangkat.'
+      'Akses kamera ditolak oleh browser atau perangkat.'
     );
 
   }
@@ -1805,7 +1678,7 @@ function jelaskanErrorKamera(
   ) {
 
     return (
-      'Kamera sedang digunakan aplikasi/browser lain.'
+      'Kamera sedang digunakan aplikasi atau browser lain.'
     );
 
   }
@@ -1829,14 +1702,16 @@ function jelaskanErrorKamera(
   ) {
 
     return (
-      'Browser memblokir akses kamera karena alasan keamanan. Pastikan menggunakan HTTPS.'
+      'Browser memblokir akses kamera. Pastikan menggunakan HTTPS.'
     );
 
   }
 
 
-  return message ||
-    'Terjadi kesalahan saat membuka kamera.';
+  return (
+    message ||
+    'Terjadi kesalahan saat membuka kamera.'
+  );
 
 }
 
@@ -1849,12 +1724,8 @@ async function qrBerhasil(
   decodedText
 ) {
 
-  if (
-    sedangMemproses
-  ) {
-
+  if (sedangMemproses) {
     return;
-
   }
 
 
@@ -1887,7 +1758,6 @@ async function qrBerhasil(
 
   status.className =
     'status warning';
-
 
   status.textContent =
     '⏳ QR terbaca. Mencari data peserta...';
@@ -1924,8 +1794,12 @@ function cariPeserta(
   panggilJSONP(
 
     {
-      action: 'lookup',
-      id: idPeserta
+      action:
+        'lookup',
+
+      id:
+        idPeserta
+
     },
 
     'lookupCallback',
@@ -2168,9 +2042,7 @@ function tampilkanPeserta(
 
 function konfirmasiAkses() {
 
-  if (
-    !pesertaTerpilih
-  ) {
+  if (!pesertaTerpilih) {
 
     tampilkanError(
       'Data peserta belum tersedia.'
@@ -2196,7 +2068,6 @@ function konfirmasiAkses() {
 
 
   btn.disabled = true;
-
 
   btn.textContent =
     '⏳ MENYIMPAN...';
@@ -2273,10 +2144,18 @@ function kirimPencatatan(
   panggilJSONP(
 
     {
-      action: 'scan',
-      id: idPeserta,
-      hari: hari,
-      akses: akses
+      action:
+        'scan',
+
+      id:
+        idPeserta,
+
+      hari:
+        hari,
+
+      akses:
+        akses
+
     },
 
     'scanCallback',
@@ -2717,9 +2596,14 @@ function tambahRiwayat(
     new Date().toLocaleTimeString(
       'id-ID',
       {
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit'
+        hour:
+          '2-digit',
+
+        minute:
+          '2-digit',
+
+        second:
+          '2-digit'
       }
     );
 
@@ -2849,15 +2733,7 @@ async function scanLagi() {
 
   try {
 
-    /*
-    Jika kita sudah memiliki cameraId
-    dari daftar kamera, gunakan kamera tersebut.
-    Kalau belum ada, gunakan kamera belakang.
-    */
-
-    if (
-      kameraSekarang
-    ) {
+    if (kameraSekarang) {
 
       await mulaiScannerDenganKamera(
         kameraSekarang
@@ -2880,7 +2756,6 @@ async function scanLagi() {
 
     status.textContent =
       '✅ Kamera aktif. Arahkan QR peserta ke kotak hijau.';
-
 
   }
 
@@ -2998,4 +2873,3 @@ window.addEventListener(
 
 </body>
 </html>
-```
