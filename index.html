@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -478,8 +479,7 @@
           type="radio"
           name="hari"
           id="hari1"
-          value="Hari 1"
-        >
+          value="Hari 1">
         <label for="hari1">
           Hari 1
         </label>
@@ -491,8 +491,7 @@
           name="hari"
           id="hari2"
           value="Hari 2"
-          checked
-        >
+          checked>
         <label for="hari2">
           Hari 2
         </label>
@@ -503,8 +502,7 @@
           type="radio"
           name="hari"
           id="hari3"
-          value="Hari 3"
-        >
+          value="Hari 3">
         <label for="hari3">
           Hari 3
         </label>
@@ -631,11 +629,48 @@
 const API_URL =
   'https://script.google.com/macros/s/AKfycbwCdkbSG5DlSZJmM5N8g7KYU4UHuqXXEpXiP70aSr-9XEX9riRQXBUNVyj2nYqQOSPz/exec';
 
+
+/*
+=====================================================
+PENGATURAN KETAHANAN SISTEM
+=====================================================
+
+5 detik:
+- Batas tunggu normal dari server.
+
+Retry:
+- Jika respons pertama terlambat, sistem melakukan
+  pemeriksaan ulang.
+- Backend memiliki ScriptLock + duplicate protection.
+- Jadi retry tidak membuat pencatatan ganda.
+
+Jumlah scanner:
+- Tidak dibatasi oleh halaman ini.
+- 20 perangkat dapat membuka URL yang sama.
+- Setiap perangkat memiliki sesi scanner sendiri.
+
+=====================================================
+*/
+
+const REQUEST_TIMEOUT_MS = 5000;
+
+const RETRY_DELAY_MS = 300;
+
+const MAX_SCAN_RETRY = 1;
+
+const MAX_LOOKUP_RETRY = 1;
+
+
 let scanner = null;
+
 let kameraAktif = false;
+
 let sedangMemproses = false;
+
 let pesertaTerpilih = null;
+
 let daftarKamera = [];
+
 let kameraSekarang = null;
 
 
@@ -707,24 +742,64 @@ document
 
 
 /* =====================================================
-   JSONP HELPER
+   JSONP HELPER - OPTIMASI 5 DETIK
 ===================================================== */
 
-function panggilJSONP(params, prefix, onSuccess, onError) {
+function panggilJSONP(
+  params,
+  prefix,
+  onSuccess,
+  onError,
+  timeoutMs
+) {
+
+  timeoutMs =
+    timeoutMs ||
+    REQUEST_TIMEOUT_MS;
+
 
   const callbackName =
     prefix +
     '_' +
     Date.now() +
     '_' +
-    Math.floor(Math.random() * 100000);
+    Math.floor(
+      Math.random() * 1000000
+    );
+
 
   const script =
     document.createElement('script');
 
+
   let selesai = false;
 
-  const timeout =
+
+  let timeoutId = null;
+
+
+  function cleanup() {
+
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+
+    if (window[callbackName]) {
+      try {
+        delete window[callbackName];
+      } catch (e) {
+        window[callbackName] = undefined;
+      }
+    }
+
+    if (script.parentNode) {
+      script.parentNode.removeChild(script);
+    }
+
+  }
+
+
+  timeoutId =
     setTimeout(function() {
 
       if (selesai) {
@@ -733,35 +808,16 @@ function panggilJSONP(params, prefix, onSuccess, onError) {
 
       selesai = true;
 
-      if (window[callbackName]) {
-        delete window[callbackName];
-      }
+      cleanup();
 
-      if (script.parentNode) {
-        script.parentNode.removeChild(script);
-      }
 
       onError(
         new Error(
-          'Server tidak memberikan respons dalam 15 detik.'
+          'Server belum memberikan respons dalam 5 detik.'
         )
       );
 
-    }, 15000);
-
-
-  function cleanup() {
-
-    clearTimeout(timeout);
-
-    if (window[callbackName]) {
-      delete window[callbackName];
-    }
-
-    if (script.parentNode) {
-      script.parentNode.removeChild(script);
-    }
-  }
+    }, timeoutMs);
 
 
   window[callbackName] =
@@ -791,14 +847,16 @@ function panggilJSONP(params, prefix, onSuccess, onError) {
 
       cleanup();
 
+
       console.error(
         'JSONP ERROR:',
         error
       );
 
+
       onError(
         new Error(
-          'Tidak dapat memuat respons dari Apps Script.'
+          'Koneksi ke server gagal.'
         )
       );
 
@@ -812,7 +870,9 @@ function panggilJSONP(params, prefix, onSuccess, onError) {
         return (
           encodeURIComponent(key) +
           '=' +
-          encodeURIComponent(params[key])
+          encodeURIComponent(
+            params[key]
+          )
         );
 
       })
@@ -824,12 +884,18 @@ function panggilJSONP(params, prefix, onSuccess, onError) {
     '?' +
     query +
     '&callback=' +
-    encodeURIComponent(callbackName);
+    encodeURIComponent(
+      callbackName
+    );
 
 
   script.async = true;
 
-  document.body.appendChild(script);
+
+  document.body.appendChild(
+    script
+  );
+
 }
 
 
@@ -840,13 +906,19 @@ function panggilJSONP(params, prefix, onSuccess, onError) {
 async function aktifkanKamera() {
 
   const btn =
-    document.getElementById('btnKamera');
+    document.getElementById(
+      'btnKamera'
+    );
 
   const status =
-    document.getElementById('status');
+    document.getElementById(
+      'status'
+    );
 
   const placeholder =
-    document.getElementById('placeholder');
+    document.getElementById(
+      'placeholder'
+    );
 
 
   if (kameraAktif) {
@@ -863,10 +935,12 @@ async function aktifkanKamera() {
 
   updateKonfigurasi();
 
+
   btn.disabled = true;
 
   btn.textContent =
     '⏳ MEMBUKA KAMERA...';
+
 
   status.className =
     'status warning';
@@ -946,8 +1020,10 @@ async function aktifkanKamera() {
 
 
     if (kameraBelakang) {
+
       kameraSekarang =
         kameraBelakang.id;
+
     }
 
 
@@ -955,7 +1031,9 @@ async function aktifkanKamera() {
 
 
     document
-      .getElementById('cameraSelect')
+      .getElementById(
+        'cameraSelect'
+      )
       .value =
       kameraSekarang;
 
@@ -964,6 +1042,7 @@ async function aktifkanKamera() {
       kameraSekarang
     );
 
+
   } catch (error) {
 
     console.error(
@@ -971,15 +1050,19 @@ async function aktifkanKamera() {
       error
     );
 
+
     kameraAktif = false;
+
 
     btn.disabled = false;
 
     btn.textContent =
       '📷 MULAI SCAN';
 
+
     status.className =
       'status error';
+
 
     status.textContent =
       '❌ Kamera gagal dibuka: ' +
@@ -1022,10 +1105,14 @@ function tampilkanDaftarKamera() {
     function(camera, index) {
 
       const option =
-        document.createElement('option');
+        document.createElement(
+          'option'
+        );
+
 
       option.value =
         camera.id;
+
 
       let nama =
         camera.label;
@@ -1045,6 +1132,7 @@ function tampilkanDaftarKamera() {
 
       option.textContent =
         nama;
+
 
       select.appendChild(
         option
@@ -1066,6 +1154,7 @@ function tampilkanDaftarKamera() {
   info.textContent =
     daftarKamera.length +
     ' kamera terdeteksi pada perangkat.';
+
 }
 
 
@@ -1093,6 +1182,15 @@ async function mulaiScannerDenganKamera(
     );
 
 
+  if (!cameraId) {
+
+    throw new Error(
+      'Kamera belum dipilih.'
+    );
+
+  }
+
+
   if (scanner) {
 
     try {
@@ -1104,6 +1202,7 @@ async function mulaiScannerDenganKamera(
     } catch (e) {}
 
     scanner = null;
+
   }
 
 
@@ -1128,7 +1227,9 @@ async function mulaiScannerDenganKamera(
             ) * 0.65
           );
 
+
         return {
+
           width:
             Math.min(
               300,
@@ -1140,6 +1241,7 @@ async function mulaiScannerDenganKamera(
               300,
               ukuran
             )
+
         };
 
       },
@@ -1201,6 +1303,7 @@ async function mulaiScannerDenganKamera(
 
 
   pastikanVideoTerlihat();
+
 }
 
 
@@ -1214,6 +1317,7 @@ async function gantiKamera() {
     document.getElementById(
       'cameraSelect'
     );
+
 
   const cameraId =
     select.value;
@@ -1254,14 +1358,18 @@ async function gantiKamera() {
     status.textContent =
       '✅ Kamera berhasil diganti.';
 
+
   } catch (error) {
 
     console.error(error);
 
+
     kameraAktif = false;
+
 
     status.className =
       'status error';
+
 
     status.textContent =
       '❌ Gagal mengganti kamera: ' +
@@ -1271,6 +1379,7 @@ async function gantiKamera() {
       );
 
   }
+
 }
 
 
@@ -1320,6 +1429,7 @@ function pastikanVideoTerlihat() {
     },
     800
   );
+
 }
 
 
@@ -1350,6 +1460,7 @@ async function qrBerhasil(
     sedangMemproses = false;
 
     return;
+
   }
 
 
@@ -1365,13 +1476,16 @@ async function qrBerhasil(
   status.className =
     'status warning';
 
+
   status.textContent =
     '⏳ QR terbaca. Mencari data peserta...';
 
 
   cariPeserta(
-    idPeserta
+    idPeserta,
+    0
   );
+
 }
 
 
@@ -1382,8 +1496,11 @@ async function qrBerhasil(
 async function hentikanScanner() {
 
   if (!scanner) {
+
     kameraAktif = false;
+
     return;
+
   }
 
 
@@ -1400,15 +1517,18 @@ async function hentikanScanner() {
   scanner = null;
 
   kameraAktif = false;
+
 }
 
 
 /* =====================================================
    CARI PESERTA
+   DENGAN RETRY 1X
 ===================================================== */
 
 function cariPeserta(
-  idPeserta
+  idPeserta,
+  percobaan
 ) {
 
   panggilJSONP(
@@ -1435,6 +1555,7 @@ function cariPeserta(
         );
 
         return;
+
       }
 
 
@@ -1448,6 +1569,7 @@ function cariPeserta(
         );
 
         return;
+
       }
 
 
@@ -1461,6 +1583,7 @@ function cariPeserta(
         );
 
         return;
+
       }
 
 
@@ -1473,6 +1596,7 @@ function cariPeserta(
         );
 
         return;
+
       }
 
 
@@ -1494,9 +1618,45 @@ function cariPeserta(
       );
 
 
+      if (
+        percobaan <
+        MAX_LOOKUP_RETRY
+      ) {
+
+        const status =
+          document.getElementById(
+            'status'
+          );
+
+
+        status.className =
+          'status warning';
+
+
+        status.textContent =
+          '⏳ Server sedang sibuk. Mencoba kembali...';
+
+
+        setTimeout(
+          function() {
+
+            cariPeserta(
+              idPeserta,
+              percobaan + 1
+            );
+
+          },
+          RETRY_DELAY_MS
+        );
+
+
+        return;
+
+      }
+
+
       tampilkanError(
-        error.message ||
-        'Tidak dapat menghubungi server Apps Script.'
+        'Server belum merespons. Silakan scan kembali.'
       );
 
     }
@@ -1519,10 +1679,12 @@ function tampilkanPeserta(
       'resultCard'
     );
 
+
   const hasil =
     document.getElementById(
       'hasilScan'
     );
+
 
   const status =
     document.getElementById(
@@ -1532,6 +1694,7 @@ function tampilkanPeserta(
 
   const akses =
     getAkses();
+
 
   const hari =
     getHari();
@@ -1601,11 +1764,13 @@ function tampilkanPeserta(
   status.className =
     'status success';
 
+
   status.textContent =
     '✅ DATA PESERTA DITEMUKAN. Menunggu konfirmasi panitia.';
 
 
   sedangMemproses = false;
+
 }
 
 
@@ -1622,11 +1787,13 @@ function konfirmasiAkses() {
     );
 
     return;
+
   }
 
 
   const hari =
     getHari();
+
 
   const akses =
     getAkses();
@@ -1639,6 +1806,7 @@ function konfirmasiAkses() {
 
 
   btn.disabled = true;
+
 
   btn.textContent =
     '⏳ MENYIMPAN...';
@@ -1653,15 +1821,71 @@ function konfirmasiAkses() {
   status.className =
     'status warning';
 
+
   status.textContent =
-    '⏳ Menyimpan pencatatan ke server...';
+    '⏳ Menyimpan pencatatan...';
+
+
+  kirimPencatatan(
+    hari,
+    akses,
+    0
+  );
+
+}
+
+
+/* =====================================================
+   KIRIM PENCATATAN
+   RETRY AMAN
+===================================================== */
+
+function kirimPencatatan(
+  hari,
+  akses,
+  percobaan
+) {
+
+  const btn =
+    document.getElementById(
+      'btnKonfirmasi'
+    );
+
+
+  const status =
+    document.getElementById(
+      'status'
+    );
+
+
+  const idPeserta =
+    pesertaTerpilih
+      ? pesertaTerpilih.idPeserta
+      : '';
+
+
+  if (!idPeserta) {
+
+    btn.disabled = false;
+
+    btn.textContent =
+      '✅ KONFIRMASI';
+
+
+    tampilkanError(
+      'ID peserta tidak tersedia.'
+    );
+
+    return;
+
+  }
 
 
   panggilJSONP(
 
     {
       action: 'scan',
-      id: pesertaTerpilih.idPeserta,
+      id: idPeserta,
       hari: hari,
       akses: akses
     },
@@ -1678,19 +1902,41 @@ function konfirmasiAkses() {
 
       btn.disabled = false;
 
+
       btn.textContent =
         '✅ KONFIRMASI';
 
 
       if (!data) {
 
+        if (
+          percobaan <
+          MAX_SCAN_RETRY
+        ) {
+
+          ulangiPencatatan(
+            hari,
+            akses,
+            percobaan
+          );
+
+          return;
+
+        }
+
+
         tampilkanError(
-          'Respons server kosong.'
+          'Server memberikan respons kosong. Silakan periksa kembali pencatatan.'
         );
 
         return;
+
       }
 
+
+      /*
+      SUCCESS NORMAL
+      */
 
       if (
         data.success === true &&
@@ -1702,21 +1948,31 @@ function konfirmasiAkses() {
         );
 
         return;
+
       }
 
+
+      /*
+      DUPLICATE
+      */
 
       if (
         data.duplicate === true ||
         data.status === 'SUDAH HADIR'
       ) {
 
-        tampilkanDuplikat(
+        tampilkanSudahTersimpan(
           data
         );
 
         return;
+
       }
 
+
+      /*
+      ERROR DARI BACKEND
+      */
 
       tampilkanError(
         data.message ||
@@ -1727,25 +1983,99 @@ function konfirmasiAkses() {
 
     function(error) {
 
-      btn.disabled = false;
-
-      btn.textContent =
-        '✅ KONFIRMASI';
-
-
       console.error(
         'SCAN ERROR:',
         error
       );
 
 
+      /*
+      JANGAN LANGSUNG MENYATAKAN GAGAL.
+
+      Karena request pertama mungkin sudah
+      berhasil menulis ke spreadsheet tetapi
+      respons JSONP terlambat.
+      */
+
+
+      if (
+        percobaan <
+        MAX_SCAN_RETRY
+      ) {
+
+        status.className =
+          'status warning';
+
+
+        status.textContent =
+          '⏳ Respons terlambat. Memastikan pencatatan...';
+
+
+        ulangiPencatatan(
+          hari,
+          akses,
+          percobaan
+        );
+
+
+        return;
+
+      }
+
+
+      btn.disabled = false;
+
+
+      btn.textContent =
+        '✅ KONFIRMASI';
+
+
       tampilkanError(
-        error.message ||
-        'Tidak dapat menghubungi server Apps Script.'
+        'Server sedang sibuk. Silakan periksa kembali sebelum melakukan scan ulang.'
       );
 
     }
 
+  );
+
+}
+
+
+/* =====================================================
+   RETRY PENCATATAN
+===================================================== */
+
+function ulangiPencatatan(
+  hari,
+  akses,
+  percobaan
+) {
+
+  const status =
+    document.getElementById(
+      'status'
+    );
+
+
+  status.className =
+    'status warning';
+
+
+  status.textContent =
+    '⏳ Memastikan status pencatatan...';
+
+
+  setTimeout(
+    function() {
+
+      kirimPencatatan(
+        hari,
+        akses,
+        percobaan + 1
+      );
+
+    },
+    RETRY_DELAY_MS
   );
 
 }
@@ -1782,6 +2112,7 @@ function tampilkanBerhasil(
 
   const akses =
     getAkses();
+
 
   const hari =
     getHari();
@@ -1846,6 +2177,7 @@ function tampilkanBerhasil(
   status.className =
     'status success';
 
+
   status.textContent =
     '✅ Pencatatan berhasil disimpan.';
 
@@ -1858,6 +2190,120 @@ function tampilkanBerhasil(
 
 
   pesertaTerpilih = null;
+
+}
+
+
+/* =====================================================
+   SUDAH TERSIMPAN
+===================================================== */
+
+function tampilkanSudahTersimpan(
+  data
+) {
+
+  document
+    .getElementById(
+      'resultCard'
+    )
+    .classList.remove(
+      'show'
+    );
+
+
+  const successCard =
+    document.getElementById(
+      'successCard'
+    );
+
+
+  const hasil =
+    document.getElementById(
+      'hasilKehadiran'
+    );
+
+
+  const akses =
+    getAkses();
+
+
+  const hari =
+    getHari();
+
+
+  const labelAkses =
+    getAksesLabel(
+      akses
+    );
+
+
+  hasil.innerHTML =
+
+    '<div class="success-box">' +
+    '✅ PENCATATAN SUDAH TERSIMPAN' +
+    '</div>' +
+
+    '<div class="participant-info">' +
+
+    '<div>' +
+    '<strong>Nama</strong>: ' +
+    escapeHtml(
+      pesertaTerpilih.nama || ''
+    ) +
+    '</div>' +
+
+    '<div>' +
+    '<strong>ID Peserta</strong>: ' +
+    escapeHtml(
+      pesertaTerpilih.idPeserta || ''
+    ) +
+    '</div>' +
+
+    '<div>' +
+    '<strong>Jenis Akses</strong>: ' +
+    escapeHtml(
+      labelAkses
+    ) +
+    '</div>' +
+
+    '<div>' +
+    '<strong>Hari</strong>: ' +
+    escapeHtml(
+      hari
+    ) +
+    '</div>' +
+
+    '</div>';
+
+
+  successCard.classList.add(
+    'show'
+  );
+
+
+  const status =
+    document.getElementById(
+      'status'
+    );
+
+
+  status.className =
+    'status success';
+
+
+  status.textContent =
+    '✅ Pencatatan sudah tersimpan. Respons server sebelumnya terlambat.';
+
+
+  tambahRiwayat(
+    pesertaTerpilih,
+    labelAkses,
+    hari
+  );
+
+
+  pesertaTerpilih = null;
+
 }
 
 
@@ -1892,6 +2338,7 @@ function tampilkanDuplikat(
 
   const akses =
     getAkses();
+
 
   const hari =
     getHari();
@@ -1952,11 +2399,13 @@ function tampilkanDuplikat(
   status.className =
     'status warning';
 
+
   status.textContent =
     '⚠️ Peserta sudah tercatat untuk akses tersebut pada hari ini.';
 
 
   pesertaTerpilih = null;
+
 }
 
 
@@ -2038,6 +2487,7 @@ function tambahRiwayat(
     item,
     history.firstChild
   );
+
 }
 
 
@@ -2083,6 +2533,7 @@ function tampilkanError(
 
 
   sedangMemproses = false;
+
 }
 
 
@@ -2135,9 +2586,12 @@ async function scanLagi() {
       kameraSekarang
     );
 
+
   } catch (error) {
 
-    console.error(error);
+    console.error(
+      error
+    );
 
 
     status.className =
@@ -2152,6 +2606,7 @@ async function scanLagi() {
       );
 
   }
+
 }
 
 
@@ -2191,6 +2646,7 @@ function escapeHtml(
       /'/g,
       '&#039;'
     );
+
 }
 
 
@@ -2225,3 +2681,4 @@ window.addEventListener(
 
 </body>
 </html>
+```
