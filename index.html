@@ -38,7 +38,7 @@
     }
 
     .container {
-      max-width: 700px;
+      max-width: 760px;
       margin: 20px auto;
       padding: 0 15px 40px;
     }
@@ -54,7 +54,7 @@
     label {
       display: block;
       font-weight: bold;
-      margin-bottom: 7px;
+      margin-bottom: 8px;
     }
 
     select,
@@ -68,7 +68,6 @@
     select {
       border: 1px solid #ccc;
       background: white;
-      margin-bottom: 12px;
     }
 
     button {
@@ -86,6 +85,97 @@
     button:disabled {
       background: #999;
       cursor: not-allowed;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 12px;
+    }
+
+    .access-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .access-option {
+      position: relative;
+    }
+
+    .access-option input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .access-option label {
+      margin: 0;
+      padding: 15px 12px;
+      border: 2px solid #d5dbe1;
+      border-radius: 11px;
+      background: #fff;
+      cursor: pointer;
+      text-align: center;
+      font-size: 14px;
+      min-height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .access-option input:checked + label {
+      border-color: #0b57d0;
+      background: #eaf1ff;
+      color: #0b57d0;
+    }
+
+    .day-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .day-option {
+      position: relative;
+    }
+
+    .day-option input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .day-option label {
+      margin: 0;
+      padding: 13px 8px;
+      border: 2px solid #d5dbe1;
+      border-radius: 10px;
+      background: white;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .day-option input:checked + label {
+      border-color: #0b57d0;
+      background: #eaf1ff;
+      color: #0b57d0;
+    }
+
+    .active-config {
+      background: #f0f5ff;
+      border: 1px solid #cbdcff;
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 15px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .active-config strong {
+      color: #0b57d0;
     }
 
     #cameraContainer {
@@ -211,7 +301,7 @@
 
     .participant-info strong {
       display: inline-block;
-      min-width: 125px;
+      min-width: 135px;
     }
 
     .success-box {
@@ -236,6 +326,7 @@
 
     .camera-select {
       display: none;
+      margin-top: 15px;
     }
 
     .camera-select.show {
@@ -260,7 +351,34 @@
       display: none !important;
     }
 
-    @media (max-width: 500px) {
+    .history-item {
+      border-left: 4px solid #0b57d0;
+      background: #f7f9fb;
+      padding: 10px 12px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+
+    .history-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .history-empty {
+      color: #777;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    @media (max-width: 600px) {
+      .access-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .day-grid {
+        grid-template-columns: 1fr;
+      }
+
       .container {
         margin-top: 10px;
       }
@@ -287,120 +405,236 @@
 
 <body>
 
-  <div class="header">
-    <h1>Festival Literasi Sulawesi Utara 2026</h1>
-    <p>Scanner Kehadiran Peserta</p>
-  </div>
+<div class="header">
+  <h1>Festival Literasi Sulawesi Utara 2026</h1>
+  <p>Scanner Kehadiran & Akses Venue</p>
+</div>
 
-  <div class="container">
+<div class="container">
 
-    <div class="card">
+  <!-- PENGATURAN -->
+  <div class="card" id="settingCard">
 
-      <label for="hari">
-        Pilih Hari Kehadiran
+    <div class="section-title">
+      Jenis Akses
+    </div>
+
+    <div class="access-grid">
+
+      <div class="access-option">
+        <input
+          type="radio"
+          name="akses"
+          id="aksesKehadiran"
+          value="KEHADIRAN"
+          checked>
+        <label for="aksesKehadiran">
+          Kehadiran Peserta
+        </label>
+      </div>
+
+      <div class="access-option">
+        <input
+          type="radio"
+          name="akses"
+          id="aksesBazar"
+          value="BAZAR_BUKU">
+        <label for="aksesBazar">
+          Bazar Buku
+        </label>
+      </div>
+
+      <div class="access-option">
+        <input
+          type="radio"
+          name="akses"
+          id="aksesTeater"
+          value="TEATER_SENI">
+        <label for="aksesTeater">
+          Teater / Seni
+        </label>
+      </div>
+
+      <div class="access-option">
+        <input
+          type="radio"
+          name="akses"
+          id="aksesUtama"
+          value="VENUE_UTAMA">
+        <label for="aksesUtama">
+          Venue Utama
+        </label>
+      </div>
+
+    </div>
+
+    <div class="section-title">
+      Hari Kegiatan
+    </div>
+
+    <div class="day-grid">
+
+      <div class="day-option">
+        <input
+          type="radio"
+          name="hari"
+          id="hari1"
+          value="Hari 1"
+        >
+        <label for="hari1">
+          Hari 1
+        </label>
+      </div>
+
+      <div class="day-option">
+        <input
+          type="radio"
+          name="hari"
+          id="hari2"
+          value="Hari 2"
+          checked
+        >
+        <label for="hari2">
+          Hari 2
+        </label>
+      </div>
+
+      <div class="day-option">
+        <input
+          type="radio"
+          name="hari"
+          id="hari3"
+          value="Hari 3"
+        >
+        <label for="hari3">
+          Hari 3
+        </label>
+      </div>
+
+    </div>
+
+    <div class="active-config">
+      Pengaturan scanner:
+      <br>
+      <strong id="activeAccess">Kehadiran Peserta</strong>
+      —
+      <strong id="activeDay">Hari 2</strong>
+    </div>
+
+    <button id="btnKamera" onclick="aktifkanKamera()">
+      📷 MULAI SCAN
+    </button>
+
+    <div id="cameraSelectContainer" class="camera-select">
+
+      <label for="cameraSelect">
+        Pilih Kamera
       </label>
 
-      <select id="hari">
-        <option value="Hari 2">Hari 2</option>
-        <option value="Hari 3">Hari 3</option>
-      </select>
+      <select id="cameraSelect" onchange="gantiKamera()"></select>
 
-      <div id="cameraSelectContainer" class="camera-select">
-
-        <label for="cameraSelect">
-          Pilih Kamera
-        </label>
-
-        <select id="cameraSelect" onchange="gantiKamera()">
-        </select>
-
-        <div id="cameraInfo" class="camera-info">
-          Kamera tersedia akan muncul di sini.
-        </div>
-
-      </div>
-
-      <button id="btnKamera" onclick="aktifkanKamera()">
-        📷 AKTIFKAN KAMERA
-      </button>
-
-      <div id="status" class="status">
-        Kamera belum diaktifkan.
+      <div id="cameraInfo" class="camera-info">
+        Kamera tersedia akan muncul di sini.
       </div>
 
     </div>
 
-    <div class="card">
-
-      <div id="cameraContainer">
-
-        <div id="reader"></div>
-
-        <div id="placeholder">
-
-          <div class="camera-icon">
-            📷
-          </div>
-
-          <p>
-            <strong>Kamera belum aktif</strong>
-          </p>
-
-          <p>
-            Tekan tombol "AKTIFKAN KAMERA"
-          </p>
-
-        </div>
-
-        <div class="scan-overlay">
-          <div class="scan-box"></div>
-        </div>
-
-      </div>
-
-      <div class="small">
-        Arahkan QR peserta ke dalam kotak hijau.
-      </div>
-
-    </div>
-
-    <div id="resultCard" class="card result">
-
-      <h3 style="margin-top:0;">
-        Data Peserta
-      </h3>
-
-      <div id="hasilScan"></div>
-
-      <button
-        id="btnKonfirmasi"
-        onclick="konfirmasiKehadiran()">
-
-        ✅ KONFIRMASI KEHADIRAN
-
-      </button>
-
-      <button
-        onclick="scanLagi()"
-        style="margin-top:10px;background:#555;">
-
-        🔄 SCAN LAGI
-
-      </button>
-
-    </div>
-
-    <div id="successCard" class="card result">
-
-      <div id="hasilKehadiran"></div>
-
-      <button onclick="scanLagi()">
-        🔄 SCAN PESERTA BERIKUTNYA
-      </button>
-
+    <div id="status" class="status">
+      Pilih jenis akses dan hari, kemudian tekan MULAI SCAN.
     </div>
 
   </div>
+
+
+  <!-- KAMERA -->
+  <div class="card">
+
+    <div id="cameraContainer">
+
+      <div id="reader"></div>
+
+      <div id="placeholder">
+
+        <div class="camera-icon">
+          📷
+        </div>
+
+        <p>
+          <strong>Kamera belum aktif</strong>
+        </p>
+
+        <p>
+          Tekan tombol "MULAI SCAN"
+        </p>
+
+      </div>
+
+      <div class="scan-overlay">
+        <div class="scan-box"></div>
+      </div>
+
+    </div>
+
+    <div class="small">
+      Arahkan QR peserta ke dalam kotak hijau.
+    </div>
+
+  </div>
+
+
+  <!-- HASIL PESERTA -->
+  <div id="resultCard" class="card result">
+
+    <h3 style="margin-top:0;">
+      Data Peserta
+    </h3>
+
+    <div id="hasilScan"></div>
+
+    <button
+      id="btnKonfirmasi"
+      onclick="konfirmasiAkses()">
+      ✅ KONFIRMASI
+    </button>
+
+    <button
+      onclick="scanLagi()"
+      style="margin-top:10px;background:#555;">
+      🔄 BATAL / SCAN LAGI
+    </button>
+
+  </div>
+
+
+  <!-- HASIL BERHASIL -->
+  <div id="successCard" class="card result">
+
+    <div id="hasilKehadiran"></div>
+
+    <button onclick="scanLagi()">
+      🔄 SCAN PESERTA BERIKUTNYA
+    </button>
+
+  </div>
+
+
+  <!-- RIWAYAT SESI -->
+  <div class="card">
+
+    <h3 style="margin-top:0;">
+      Riwayat Scanner Sesi Ini
+    </h3>
+
+    <div id="history">
+      <div class="history-empty">
+        Belum ada pencatatan.
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
 
 <script>
 
@@ -425,6 +659,75 @@
 
 
   /* =====================================================
+     LABEL
+  ===================================================== */
+
+  function getAkses() {
+
+    const selected =
+      document.querySelector(
+        'input[name="akses"]:checked'
+      );
+
+    return selected
+      ? selected.value
+      : 'KEHADIRAN';
+  }
+
+
+  function getAksesLabel(akses) {
+
+    const labels = {
+      'KEHADIRAN': 'Kehadiran Peserta',
+      'VENUE_UTAMA': 'Venue Utama',
+      'BAZAR_BUKU': 'Bazar Buku',
+      'TEATER_SENI': 'Teater / Seni'
+    };
+
+    return labels[akses] || akses;
+  }
+
+
+  function getHari() {
+
+    const selected =
+      document.querySelector(
+        'input[name="hari"]:checked'
+      );
+
+    return selected
+      ? selected.value
+      : 'Hari 2';
+  }
+
+
+  function updateKonfigurasi() {
+
+    document.getElementById(
+      'activeAccess'
+    ).textContent =
+      getAksesLabel(getAkses());
+
+    document.getElementById(
+      'activeDay'
+    ).textContent =
+      getHari();
+  }
+
+
+  document
+    .querySelectorAll('input[name="akses"], input[name="hari"]')
+    .forEach(function(input) {
+
+      input.addEventListener(
+        'change',
+        updateKonfigurasi
+      );
+
+    });
+
+
+  /* =====================================================
      AKTIFKAN KAMERA
   ===================================================== */
 
@@ -441,13 +744,16 @@
 
     if (kameraAktif) {
 
-      status.className = 'status success';
+      status.className =
+        'status success';
 
       status.textContent =
-        '✅ Kamera sudah aktif. Arahkan QR ke kotak hijau.';
+        '✅ Kamera aktif. Arahkan QR peserta ke kotak hijau.';
 
       return;
     }
+
+    updateKonfigurasi();
 
     btn.disabled = true;
 
@@ -468,9 +774,11 @@
           audio: false
         });
 
-      stream.getTracks().forEach(function(track) {
-        track.stop();
-      });
+      stream
+        .getTracks()
+        .forEach(function(track) {
+          track.stop();
+        });
 
       status.textContent =
         '⏳ Mendeteksi kamera yang tersedia...';
@@ -478,7 +786,10 @@
       daftarKamera =
         await Html5Qrcode.getCameras();
 
-      if (!daftarKamera || daftarKamera.length === 0) {
+      if (
+        !daftarKamera ||
+        daftarKamera.length === 0
+      ) {
 
         throw new Error(
           'Tidak ada kamera yang terdeteksi pada perangkat.'
@@ -493,7 +804,9 @@
         daftarKamera.find(function(camera) {
 
           const nama =
-            String(camera.label || '').toLowerCase();
+            String(
+              camera.label || ''
+            ).toLowerCase();
 
           return (
             nama.includes('back') ||
@@ -505,13 +818,17 @@
         });
 
       if (kameraBelakang) {
+
         kameraSekarang =
           kameraBelakang.id;
+
       }
 
       tampilkanDaftarKamera();
 
-      document.getElementById('cameraSelect').value =
+      document
+        .getElementById('cameraSelect')
+        .value =
         kameraSekarang;
 
       await mulaiScannerDenganKamera(
@@ -527,7 +844,7 @@
       btn.disabled = false;
 
       btn.textContent =
-        '📷 AKTIFKAN KAMERA';
+        '📷 MULAI SCAN';
 
       status.className =
         'status error';
@@ -537,23 +854,39 @@
           ? error.message
           : String(error);
 
-      if (error && error.name === 'NotAllowedError') {
+      if (
+        error &&
+        error.name === 'NotAllowedError'
+      ) {
+
         pesan =
           'Izin kamera ditolak oleh browser.';
+
       }
 
-      if (error && error.name === 'NotFoundError') {
+      if (
+        error &&
+        error.name === 'NotFoundError'
+      ) {
+
         pesan =
           'Kamera tidak ditemukan pada perangkat.';
+
       }
 
-      if (error && error.name === 'NotReadableError') {
+      if (
+        error &&
+        error.name === 'NotReadableError'
+      ) {
+
         pesan =
           'Kamera sedang digunakan oleh aplikasi lain.';
+
       }
 
       status.textContent =
-        '❌ Kamera gagal dibuka: ' + pesan;
+        '❌ Kamera gagal dibuka: ' +
+        pesan;
     }
   }
 
@@ -581,33 +914,47 @@
 
     select.innerHTML = '';
 
-    daftarKamera.forEach(function(camera, index) {
+    daftarKamera.forEach(
+      function(camera, index) {
 
-      const option =
-        document.createElement('option');
+        const option =
+          document.createElement(
+            'option'
+          );
 
-      option.value =
-        camera.id;
+        option.value =
+          camera.id;
 
-      let nama =
-        camera.label;
+        let nama =
+          camera.label;
 
-      if (!nama || nama.trim() === '') {
-        nama =
-          'Kamera ' + (index + 1);
+        if (
+          !nama ||
+          nama.trim() === ''
+        ) {
+
+          nama =
+            'Kamera ' +
+            (index + 1);
+
+        }
+
+        option.textContent =
+          nama;
+
+        select.appendChild(
+          option
+        );
+
       }
-
-      option.textContent =
-        nama;
-
-      select.appendChild(option);
-
-    });
+    );
 
     select.value =
       kameraSekarang;
 
-    container.classList.add('show');
+    container.classList.add(
+      'show'
+    );
 
     info.textContent =
       daftarKamera.length +
@@ -619,16 +966,24 @@
      MULAI SCANNER
   ===================================================== */
 
-  async function mulaiScannerDenganKamera(cameraId) {
+  async function mulaiScannerDenganKamera(
+    cameraId
+  ) {
 
     const btn =
-      document.getElementById('btnKamera');
+      document.getElementById(
+        'btnKamera'
+      );
 
     const status =
-      document.getElementById('status');
+      document.getElementById(
+        'status'
+      );
 
     const placeholder =
-      document.getElementById('placeholder');
+      document.getElementById(
+        'placeholder'
+      );
 
     if (scanner) {
 
@@ -644,28 +999,40 @@
     }
 
     scanner =
-      new Html5Qrcode('reader');
+      new Html5Qrcode(
+        'reader'
+      );
 
     const config = {
 
       fps: 10,
 
-      qrbox: function(width, height) {
+      qrbox:
+        function(width, height) {
 
-        const ukuran =
-          Math.floor(
-            Math.min(width, height) * 0.65
-          );
+          const ukuran =
+            Math.floor(
+              Math.min(
+                width,
+                height
+              ) * 0.65
+            );
 
-        return {
-          width:
-            Math.min(300, ukuran),
+          return {
+            width:
+              Math.min(
+                300,
+                ukuran
+              ),
 
-          height:
-            Math.min(300, ukuran)
-        };
+            height:
+              Math.min(
+                300,
+                ukuran
+              )
+          };
 
-      },
+        },
 
       disableFlip: false,
 
@@ -688,13 +1055,15 @@
 
       function(decodedText) {
 
-        qrBerhasil(decodedText);
+        qrBerhasil(
+          decodedText
+        );
 
       },
 
-      function(errorMessage) {
+      function() {
 
-        // Error scan normal diabaikan.
+        // Errores normais do scanner são ignorados.
 
       }
 
@@ -702,7 +1071,9 @@
 
     kameraAktif = true;
 
-    placeholder.classList.add('hidden');
+    placeholder.classList.add(
+      'hidden'
+    );
 
     btn.disabled = false;
 
@@ -774,7 +1145,10 @@
 
       status.textContent =
         '❌ Gagal mengganti kamera: ' +
-        (error.message || error);
+        (
+          error.message ||
+          error
+        );
     }
   }
 
@@ -785,41 +1159,44 @@
 
   function pastikanVideoTerlihat() {
 
-    setTimeout(function() {
+    setTimeout(
+      function() {
 
-      const video =
-        document.querySelector(
-          '#reader video'
-        );
+        const video =
+          document.querySelector(
+            '#reader video'
+          );
 
-      if (video) {
+        if (video) {
 
-        video.style.display =
-          'block';
+          video.style.display =
+            'block';
 
-        video.style.width =
-          '100%';
+          video.style.width =
+            '100%';
 
-        video.style.height =
-          'auto';
+          video.style.height =
+            'auto';
 
-        video.style.minHeight =
-          '300px';
+          video.style.minHeight =
+            '300px';
 
-        video.style.objectFit =
-          'cover';
+          video.style.objectFit =
+            'cover';
 
-        try {
+          try {
 
-          if (video.paused) {
-            video.play();
-          }
+            if (video.paused) {
+              video.play();
+            }
 
-        } catch (e) {}
+          } catch (e) {}
 
-      }
+        }
 
-    }, 800);
+      },
+      800
+    );
   }
 
 
@@ -827,7 +1204,9 @@
      QR TERBACA
   ===================================================== */
 
-  function qrBerhasil(decodedText) {
+  async function qrBerhasil(
+    decodedText
+  ) {
 
     if (sedangMemproses) {
       return;
@@ -836,7 +1215,9 @@
     sedangMemproses = true;
 
     const idPeserta =
-      String(decodedText || '').trim();
+      String(
+        decodedText || ''
+      ).trim();
 
     if (!idPeserta) {
 
@@ -844,6 +1225,8 @@
 
       return;
     }
+
+    await hentikanScanner();
 
     const status =
       document.getElementById(
@@ -854,21 +1237,46 @@
       'status warning';
 
     status.textContent =
-      '⏳ QR terbaca: ' +
-      idPeserta +
-      '. Mencari data peserta...';
+      '⏳ QR terbaca. Mencari data peserta...';
 
-    cariPeserta(idPeserta);
+    cariPeserta(
+      idPeserta
+    );
+  }
+
+
+  /* =====================================================
+     HENTIKAN SCANNER
+     Setelah QR terbaca kamera berhenti.
+  ===================================================== */
+
+  async function hentikanScanner() {
+
+    if (!scanner) {
+      return;
+    }
+
+    try {
+      await scanner.stop();
+    } catch (e) {}
+
+    try {
+      await scanner.clear();
+    } catch (e) {}
+
+    scanner = null;
+
+    kameraAktif = false;
   }
 
 
   /* =====================================================
      CARI PESERTA
-     PERBAIKAN UTAMA:
-     data.participant
   ===================================================== */
 
-  function cariPeserta(idPeserta) {
+  function cariPeserta(
+    idPeserta
+  ) {
 
     const callbackName =
       'lookupCallback_' +
@@ -879,7 +1287,9 @@
       );
 
     const script =
-      document.createElement('script');
+      document.createElement(
+        'script'
+      );
 
     let sudahSelesai = false;
 
@@ -891,14 +1301,25 @@
 
       sudahSelesai = true;
 
-      delete window[callbackName];
+      delete window[
+        callbackName
+      ];
 
-      if (script.parentNode) {
-        script.parentNode.removeChild(script);
+      if (
+        script.parentNode
+      ) {
+
+        script.parentNode
+          .removeChild(
+            script
+          );
+
       }
     }
 
-    window[callbackName] =
+    window[
+      callbackName
+    ] =
       function(data) {
 
         try {
@@ -908,10 +1329,14 @@
             data
           );
 
-          if (!data || data.success !== true) {
+          if (
+            !data ||
+            data.success !== true
+          ) {
 
             tampilkanError(
-              data && data.message
+              data &&
+              data.message
                 ? data.message
                 : 'Respons server tidak valid.'
             );
@@ -919,7 +1344,9 @@
             return;
           }
 
-          if (data.found !== true) {
+          if (
+            data.found !== true
+          ) {
 
             tampilkanError(
               'ID peserta tidak ditemukan: ' +
@@ -929,19 +1356,9 @@
             return;
           }
 
-          /*
-           * INI PERBAIKAN UTAMA.
-           *
-           * Apps Script mengirim:
-           *
-           * data.participant
-           *
-           * bukan:
-           *
-           * data
-           */
-
-          if (!data.participant) {
+          if (
+            !data.participant
+          ) {
 
             tampilkanError(
               'Data peserta ditemukan tetapi informasi peserta kosong.'
@@ -959,7 +1376,9 @@
 
         } catch (error) {
 
-          console.error(error);
+          console.error(
+            error
+          );
 
           tampilkanError(
             'Terjadi kesalahan saat membaca data peserta.'
@@ -988,31 +1407,34 @@
       API_URL +
       '?action=lookup' +
       '&id=' +
-      encodeURIComponent(idPeserta) +
+      encodeURIComponent(
+        idPeserta
+      ) +
       '&callback=' +
-      encodeURIComponent(callbackName);
+      encodeURIComponent(
+        callbackName
+      );
 
-    document.body.appendChild(script);
+    document.body.appendChild(
+      script
+    );
 
+    setTimeout(
+      function() {
 
-    /*
-     * Timeout agar tidak berhenti selamanya
-     * jika server tidak memberikan callback.
-     */
+        if (!sudahSelesai) {
 
-    setTimeout(function() {
+          tampilkanError(
+            'Server tidak memberikan respons dalam waktu yang ditentukan.'
+          );
 
-      if (!sudahSelesai) {
+          selesai();
 
-        tampilkanError(
-          'Server tidak memberikan respons dalam waktu yang ditentukan.'
-        );
+        }
 
-        selesai();
-
-      }
-
-    }, 15000);
+      },
+      15000
+    );
   }
 
 
@@ -1020,7 +1442,9 @@
      TAMPILKAN PESERTA
   ===================================================== */
 
-  function tampilkanPeserta(participant) {
+  function tampilkanPeserta(
+    participant
+  ) {
 
     const resultCard =
       document.getElementById(
@@ -1036,6 +1460,12 @@
       document.getElementById(
         'status'
       );
+
+    const akses =
+      getAkses();
+
+    const hari =
+      getHari();
 
     hasil.innerHTML =
 
@@ -1076,26 +1506,41 @@
       ) +
       '</div>' +
 
+      '<div>' +
+      '<strong>Jenis Akses</strong>: ' +
+      escapeHtml(
+        getAksesLabel(akses)
+      ) +
+      '</div>' +
+
+      '<div>' +
+      '<strong>Hari</strong>: ' +
+      escapeHtml(
+        hari
+      ) +
+      '</div>' +
+
       '</div>';
 
-    resultCard.classList.add('show');
+    resultCard.classList.add(
+      'show'
+    );
 
     status.className =
       'status success';
 
     status.textContent =
-      '✅ DATA PESERTA DITEMUKAN: ' +
-      (participant.nama || '');
+      '✅ DATA PESERTA DITEMUKAN. Menunggu konfirmasi panitia.';
 
     sedangMemproses = false;
   }
 
 
   /* =====================================================
-     KONFIRMASI KEHADIRAN
+     KONFIRMASI
   ===================================================== */
 
-  function konfirmasiKehadiran() {
+  function konfirmasiAkses() {
 
     if (!pesertaTerpilih) {
 
@@ -1107,9 +1552,10 @@
     }
 
     const hari =
-      document.getElementById(
-        'hari'
-      ).value;
+      getHari();
+
+    const akses =
+      getAkses();
 
     const btn =
       document.getElementById(
@@ -1119,7 +1565,7 @@
     btn.disabled = true;
 
     btn.textContent =
-      '⏳ MENYIMPAN KEHADIRAN...';
+      '⏳ MENYIMPAN...';
 
     const status =
       document.getElementById(
@@ -1130,7 +1576,7 @@
       'status warning';
 
     status.textContent =
-      '⏳ Menyimpan kehadiran...';
+      '⏳ Menyimpan pencatatan ke server...';
 
     const callbackName =
       'scanCallback_' +
@@ -1141,7 +1587,9 @@
       );
 
     const script =
-      document.createElement('script');
+      document.createElement(
+        'script'
+      );
 
     let sudahSelesai = false;
 
@@ -1153,19 +1601,30 @@
 
       sudahSelesai = true;
 
-      delete window[callbackName];
+      delete window[
+        callbackName
+      ];
 
-      if (script.parentNode) {
-        script.parentNode.removeChild(script);
+      if (
+        script.parentNode
+      ) {
+
+        script.parentNode
+          .removeChild(
+            script
+          );
+
       }
 
       btn.disabled = false;
 
       btn.textContent =
-        '✅ KONFIRMASI KEHADIRAN';
+        '✅ KONFIRMASI';
     }
 
-    window[callbackName] =
+    window[
+      callbackName
+    ] =
       function(data) {
 
         try {
@@ -1184,31 +1643,41 @@
             return;
           }
 
-          if (data.success) {
+          if (
+            data.success &&
+            data.duplicate !== true
+          ) {
 
-            tampilkanBerhasil(data);
+            tampilkanBerhasil(
+              data
+            );
 
           } else if (
             data.duplicate ||
             data.status === 'SUDAH HADIR'
           ) {
 
-            tampilkanDuplikat(data);
+            tampilkanDuplikat(
+              data
+            );
 
           } else {
 
             tampilkanError(
               data.message ||
-              'Kehadiran gagal disimpan.'
+              'Pencatatan gagal disimpan.'
             );
+
           }
 
         } catch (error) {
 
-          console.error(error);
+          console.error(
+            error
+          );
 
           tampilkanError(
-            'Terjadi kesalahan saat menyimpan kehadiran.'
+            'Terjadi kesalahan saat menyimpan pencatatan.'
           );
 
         } finally {
@@ -1241,26 +1710,35 @@
       encodeURIComponent(
         hari
       ) +
+      '&akses=' +
+      encodeURIComponent(
+        akses
+      ) +
       '&callback=' +
       encodeURIComponent(
         callbackName
       );
 
-    document.body.appendChild(script);
+    document.body.appendChild(
+      script
+    );
 
-    setTimeout(function() {
+    setTimeout(
+      function() {
 
-      if (!sudahSelesai) {
+        if (!sudahSelesai) {
 
-        tampilkanError(
-          'Server tidak memberikan respons saat menyimpan kehadiran.'
-        );
+          tampilkanError(
+            'Server tidak memberikan respons saat menyimpan pencatatan.'
+          );
 
-        selesai();
+          selesai();
 
-      }
+        }
 
-    }, 15000);
+      },
+      15000
+    );
   }
 
 
@@ -1268,11 +1746,17 @@
      BERHASIL
   ===================================================== */
 
-  function tampilkanBerhasil(data) {
+  function tampilkanBerhasil(
+    data
+  ) {
 
     document
-      .getElementById('resultCard')
-      .classList.remove('show');
+      .getElementById(
+        'resultCard'
+      )
+      .classList.remove(
+        'show'
+      );
 
     const successCard =
       document.getElementById(
@@ -1284,10 +1768,21 @@
         'hasilKehadiran'
       );
 
+    const akses =
+      getAkses();
+
+    const hari =
+      getHari();
+
+    const labelAkses =
+      getAksesLabel(
+        akses
+      );
+
     hasil.innerHTML =
 
       '<div class="success-box">' +
-      '✅ KEHADIRAN BERHASIL DICATAT' +
+      '✅ PENCATATAN BERHASIL' +
       '</div>' +
 
       '<div class="participant-info">' +
@@ -1307,17 +1802,24 @@
       '</div>' +
 
       '<div>' +
+      '<strong>Jenis Akses</strong>: ' +
+      escapeHtml(
+        labelAkses
+      ) +
+      '</div>' +
+
+      '<div>' +
       '<strong>Hari</strong>: ' +
       escapeHtml(
-        document.getElementById(
-          'hari'
-        ).value
+        hari
       ) +
       '</div>' +
 
       '</div>';
 
-    successCard.classList.add('show');
+    successCard.classList.add(
+      'show'
+    );
 
     const status =
       document.getElementById(
@@ -1328,7 +1830,13 @@
       'status success';
 
     status.textContent =
-      '✅ Kehadiran berhasil dicatat.';
+      '✅ Pencatatan berhasil disimpan.';
+
+    tambahRiwayat(
+      pesertaTerpilih,
+      labelAkses,
+      hari
+    );
 
     pesertaTerpilih = null;
   }
@@ -1338,11 +1846,17 @@
      DUPLIKAT
   ===================================================== */
 
-  function tampilkanDuplikat(data) {
+  function tampilkanDuplikat(
+    data
+  ) {
 
     document
-      .getElementById('resultCard')
-      .classList.remove('show');
+      .getElementById(
+        'resultCard'
+      )
+      .classList.remove(
+        'show'
+      );
 
     const successCard =
       document.getElementById(
@@ -1354,10 +1868,16 @@
         'hasilKehadiran'
       );
 
+    const akses =
+      getAkses();
+
+    const hari =
+      getHari();
+
     hasil.innerHTML =
 
       '<div class="duplicate-box">' +
-      '⚠️ PESERTA SUDAH HADIR PADA HARI INI' +
+      '⚠️ PENCATATAN SUDAH ADA' +
       '</div>' +
 
       '<div class="participant-info">' +
@@ -1377,17 +1897,26 @@
       '</div>' +
 
       '<div>' +
+      '<strong>Jenis Akses</strong>: ' +
+      escapeHtml(
+        getAksesLabel(
+          akses
+        )
+      ) +
+      '</div>' +
+
+      '<div>' +
       '<strong>Hari</strong>: ' +
       escapeHtml(
-        document.getElementById(
-          'hari'
-        ).value
+        hari
       ) +
       '</div>' +
 
       '</div>';
 
-    successCard.classList.add('show');
+    successCard.classList.add(
+      'show'
+    );
 
     const status =
       document.getElementById(
@@ -1398,9 +1927,83 @@
       'status warning';
 
     status.textContent =
-      '⚠️ Peserta sudah tercatat hadir hari ini.';
+      '⚠️ Peserta sudah tercatat untuk akses tersebut pada hari ini.';
 
     pesertaTerpilih = null;
+  }
+
+
+  /* =====================================================
+     RIWAYAT
+  ===================================================== */
+
+  function tambahRiwayat(
+    participant,
+    akses,
+    hari
+  ) {
+
+    const history =
+      document.getElementById(
+        'history'
+      );
+
+    const empty =
+      history.querySelector(
+        '.history-empty'
+      );
+
+    if (empty) {
+      empty.remove();
+    }
+
+    const item =
+      document.createElement(
+        'div'
+      );
+
+    item.className =
+      'history-item';
+
+    const waktu =
+      new Date().toLocaleTimeString(
+        'id-ID',
+        {
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit'
+        }
+      );
+
+    item.innerHTML =
+
+      '<strong>' +
+      escapeHtml(
+        participant.nama || ''
+      ) +
+      '</strong>' +
+
+      '<br>ID: ' +
+      escapeHtml(
+        participant.idPeserta || ''
+      ) +
+
+      '<br>' +
+      escapeHtml(
+        akses
+      ) +
+      ' — ' +
+      escapeHtml(
+        hari
+      ) +
+
+      '<br>' +
+      waktu;
+
+    history.insertBefore(
+      item,
+      history.firstChild
+    );
   }
 
 
@@ -1408,15 +2011,25 @@
      ERROR
   ===================================================== */
 
-  function tampilkanError(message) {
+  function tampilkanError(
+    message
+  ) {
 
     document
-      .getElementById('resultCard')
-      .classList.remove('show');
+      .getElementById(
+        'resultCard'
+      )
+      .classList.remove(
+        'show'
+      );
 
     document
-      .getElementById('successCard')
-      .classList.remove('show');
+      .getElementById(
+        'successCard'
+      )
+      .classList.remove(
+        'show'
+      );
 
     const status =
       document.getElementById(
@@ -1427,7 +2040,8 @@
       'status error';
 
     status.textContent =
-      '❌ ' + message;
+      '❌ ' +
+      message;
 
     sedangMemproses = false;
   }
@@ -1437,33 +2051,60 @@
      SCAN LAGI
   ===================================================== */
 
-  function scanLagi() {
+  async function scanLagi() {
 
     pesertaTerpilih = null;
 
     sedangMemproses = false;
 
     document
-      .getElementById('resultCard')
-      .classList.remove('show');
+      .getElementById(
+        'resultCard'
+      )
+      .classList.remove(
+        'show'
+      );
 
     document
-      .getElementById('successCard')
-      .classList.remove('show');
+      .getElementById(
+        'successCard'
+      )
+      .classList.remove(
+        'show'
+      );
 
     const status =
       document.getElementById(
         'status'
       );
 
-    if (kameraAktif) {
+    status.className =
+      'status warning';
+
+    status.textContent =
+      '⏳ Menyalakan kamera kembali...';
+
+    try {
+
+      await mulaiScannerDenganKamera(
+        kameraSekarang
+      );
+
+    } catch (error) {
+
+      console.error(
+        error
+      );
 
       status.className =
-        'status success';
+        'status error';
 
       status.textContent =
-        '✅ Kamera aktif. Arahkan QR berikutnya.';
-
+        '❌ Kamera gagal dinyalakan kembali: ' +
+        (
+          error.message ||
+          error
+        );
     }
   }
 
@@ -1472,15 +2113,38 @@
      ESCAPE HTML
   ===================================================== */
 
-  function escapeHtml(value) {
+  function escapeHtml(
+    value
+  ) {
 
-    return String(value || '')
+    return String(
+      value || ''
+    )
 
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;');
+      .replace(
+        /&/g,
+        '&amp;'
+      )
+
+      .replace(
+        /</g,
+        '&lt;'
+      )
+
+      .replace(
+        />/g,
+        '&gt;'
+      )
+
+      .replace(
+        /"/g,
+        '&quot;'
+      )
+
+      .replace(
+        /'/g,
+        '&#039;'
+      );
   }
 
 
@@ -1492,6 +2156,8 @@
     'load',
     function() {
 
+      updateKonfigurasi();
+
       const status =
         document.getElementById(
           'status'
@@ -1501,7 +2167,7 @@
         'status';
 
       status.textContent =
-        'Kamera belum diaktifkan. Tekan tombol untuk memulai.';
+        'Pilih jenis akses dan hari, kemudian tekan MULAI SCAN.';
 
     }
   );
