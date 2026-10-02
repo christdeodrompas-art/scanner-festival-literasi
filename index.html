@@ -655,10 +655,22 @@ const API_URL =
    KETAHANAN SISTEM
 ===================================================== */
 
-const REQUEST_TIMEOUT_MS = 8000;
-const RETRY_DELAY_MS = 500;
-const MAX_SCAN_RETRY = 1;
+// Jangan terlalu pendek: timeout yang terlalu cepat memicu retry
+// padahal request pertama masih diproses di server.
+const REQUEST_TIMEOUT_MS = 12000;
+
+// Jeda retry lookup dibuat cukup panjang agar beberapa scanner
+// tidak melakukan burst request ke endpoint secara bersamaan.
+const RETRY_DELAY_MS = 1800;
+
+// Lookup masih boleh retry 1 kali karena sifatnya hanya membaca data.
+// Pencatatan TIDAK melakukan retry otomatis untuk mencegah satu klik
+// menghasilkan dua request pencatatan saat respons pertama terlambat.
+const MAX_SCAN_RETRY = 0;
 const MAX_LOOKUP_RETRY = 1;
+
+// Perlindungan lokal terhadap QR yang sama terbaca berulang oleh kamera.
+const QR_DUPLICATE_COOLDOWN_MS = 3000;
 
 
 /* =====================================================
@@ -672,6 +684,19 @@ let pesertaTerpilih = null;
 let daftarKamera = [];
 let kameraSekarang = null;
 let scannerSedangDibuka = false;
+
+// Pengaman request di sisi browser.
+// Tujuannya bukan menggantikan validasi server, tetapi mencegah
+// satu perangkat membuat request paralel yang tidak perlu.
+let lookupSedangBerjalan = false;
+let pencatatanSedangBerjalan = false;
+
+// Menahan QR yang sama apabila kamera membacanya berkali-kali.
+let qrTerakhir = '';
+let waktuQRTerakhir = 0;
+
+// Kunci lokal untuk pencatatan yang sedang berlangsung.
+let kunciPencatatanAktif = '';
 
 
 /* =====================================================
@@ -1724,12 +1749,11 @@ async function qrBerhasil(
   decodedText
 ) {
 
-  if (sedangMemproses) {
+  // html5-qrcode dapat memanggil callback beberapa kali untuk QR
+  // yang sama sebelum kamera benar-benar berhenti.
+  if (sedangMemproses || lookupSedangBerjalan || pencatatanSedangBerjalan) {
     return;
   }
-
-
-  sedangMemproses = true;
 
 
   const idPeserta =
@@ -1739,12 +1763,25 @@ async function qrBerhasil(
 
 
   if (!idPeserta) {
-
-    sedangMemproses = false;
-
     return;
-
   }
+
+
+  const sekarang = Date.now();
+
+  if (
+    idPeserta === qrTerakhir &&
+    (sekarang - waktuQRTerakhir) < QR_DUPLICATE_COOLDOWN_MS
+  ) {
+    return;
+  }
+
+
+  qrTerakhir = idPeserta;
+  waktuQRTerakhir = sekarang;
+
+  sedangMemproses = true;
+  lookupSedangBerjalan = true;
 
 
   await hentikanScanner();
@@ -1791,6 +1828,12 @@ function cariPeserta(
   percobaan
 ) {
 
+  // Jangan pernah menjalankan dua lookup untuk perangkat yang sama.
+  if (!lookupSedangBerjalan) {
+    return;
+  }
+
+
   panggilJSONP(
 
     {
@@ -1810,6 +1853,9 @@ function cariPeserta(
         'RESPONS LOOKUP APPS SCRIPT:',
         data
       );
+
+
+      lookupSedangBerjalan = false;
 
 
       if (!data) {
@@ -1898,19 +1944,21 @@ function cariPeserta(
 
 
         status.textContent =
-          '⏳ Server sedang sibuk. Mencoba kembali...';
+          '⏳ Respons terlambat. Mencoba lookup sekali lagi...';
 
 
         setTimeout(
           function() {
 
+            // Tetap satu request aktif pada satu waktu.
             cariPeserta(
               idPeserta,
               percobaan + 1
             );
 
           },
-          RETRY_DELAY_MS
+          RETRY_DELAY_MS +
+          Math.floor(Math.random() * 700)
         );
 
 
@@ -1918,6 +1966,8 @@ function cariPeserta(
 
       }
 
+
+      lookupSedangBerjalan = false;
 
       tampilkanError(
         'Server belum merespons. Silakan scan kembali.'
@@ -2053,12 +2103,53 @@ function konfirmasiAkses() {
   }
 
 
+  if (pencatatanSedangBerjalan) {
+    return;
+  }
+
+
   const hari =
     getHari();
 
 
   const akses =
     getAkses();
+
+
+  const idPeserta =
+    pesertaTerpilih.idPeserta || '';
+
+
+  if (!idPeserta) {
+
+    tampilkanError(
+      'ID peserta tidak tersedia.'
+    );
+
+    return;
+
+  }
+
+
+  // Satu perangkat hanya boleh mempunyai satu request pencatatan aktif.
+  const kunci =
+    idPeserta +
+    '|' +
+    hari +
+    '|' +
+    akses;
+
+
+  if (
+    pencatatanSedangBerjalan &&
+    kunciPencatatanAktif === kunci
+  ) {
+    return;
+  }
+
+
+  pencatatanSedangBerjalan = true;
+  kunciPencatatanAktif = kunci;
 
 
   const btn =
@@ -2106,6 +2197,11 @@ function kirimPencatatan(
   percobaan
 ) {
 
+  if (!pencatatanSedangBerjalan) {
+    return;
+  }
+
+
   const btn =
     document.getElementById(
       'btnKonfirmasi'
@@ -2125,6 +2221,9 @@ function kirimPencatatan(
 
 
   if (!idPeserta) {
+
+    pencatatanSedangBerjalan = false;
+    kunciPencatatanAktif = '';
 
     btn.disabled = false;
 
@@ -2168,6 +2267,13 @@ function kirimPencatatan(
       );
 
 
+      // Request selesai. Callback berikutnya dari klik yang sama
+      // tidak akan membuat request kedua karena tombol tetap mengikuti
+      // alur hasil di bawah.
+      pencatatanSedangBerjalan = false;
+      kunciPencatatanAktif = '';
+
+
       btn.disabled = false;
 
       btn.textContent =
@@ -2176,24 +2282,8 @@ function kirimPencatatan(
 
       if (!data) {
 
-        if (
-          percobaan <
-          MAX_SCAN_RETRY
-        ) {
-
-          ulangiPencatatan(
-            hari,
-            akses,
-            percobaan
-          );
-
-          return;
-
-        }
-
-
         tampilkanError(
-          'Server memberikan respons kosong. Silakan periksa kembali pencatatan.'
+          'Server memberikan respons kosong. Jangan langsung scan peserta yang sama; periksa status pencatatan terlebih dahulu.'
         );
 
         return;
@@ -2245,40 +2335,27 @@ function kirimPencatatan(
       );
 
 
-      if (
-        percobaan <
-        MAX_SCAN_RETRY
-      ) {
-
-        status.className =
-          'status warning';
-
-
-        status.textContent =
-          '⏳ Respons terlambat. Memastikan pencatatan...';
-
-
-        ulangiPencatatan(
-          hari,
-          akses,
-          percobaan
-        );
-
-
-        return;
-
-      }
+      // SANGAT PENTING:
+      // Jangan mengirim ulang otomatis setelah timeout.
+      // Request pertama mungkin sebenarnya sudah masuk dan tersimpan,
+      // tetapi responsnya terlambat. Retry otomatis justru dapat
+      // menambah beban server dan menciptakan request paralel.
+      pencatatanSedangBerjalan = false;
+      kunciPencatatanAktif = '';
 
 
       btn.disabled = false;
 
       btn.textContent =
-        '✅ KONFIRMASI';
+        '🔄 CEK / KONFIRMASI LAGI';
 
 
-      tampilkanError(
-        'Server sedang sibuk. Silakan periksa kembali sebelum melakukan scan ulang.'
-      );
+      status.className =
+        'status warning';
+
+
+      status.textContent =
+        '⚠️ Respons server terlambat. Pencatatan mungkin sudah diproses. Periksa status sebelum mengirim ulang.';
 
     }
 
@@ -2291,38 +2368,21 @@ function kirimPencatatan(
    RETRY
 ===================================================== */
 
+/*
+ * Fungsi ini sengaja dipertahankan untuk kompatibilitas dengan
+ * struktur lama, tetapi tidak lagi dipakai untuk retry otomatis
+ * pencatatan. Retry otomatis pada operasi WRITE berisiko membuat
+ * burst request ketika respons pertama sebenarnya sudah berhasil.
+ */
 function ulangiPencatatan(
   hari,
   akses,
   percobaan
 ) {
 
-  const status =
-    document.getElementById(
-      'status'
-    );
-
-
-  status.className =
-    'status warning';
-
-
-  status.textContent =
-    '⏳ Memastikan status pencatatan...';
-
-
-  setTimeout(
-    function() {
-
-      kirimPencatatan(
-        hari,
-        akses,
-        percobaan + 1
-      );
-
-    },
-    RETRY_DELAY_MS
-  );
+  if (pencatatanSedangBerjalan) {
+    return;
+  }
 
 }
 
@@ -2691,6 +2751,11 @@ function tampilkanError(
 ===================================================== */
 
 async function scanLagi() {
+
+  // Jangan membuka kamera kedua jika request sebelumnya masih aktif.
+  if (pencatatanSedangBerjalan || lookupSedangBerjalan) {
+    return;
+  }
 
   pesertaTerpilih = null;
 
